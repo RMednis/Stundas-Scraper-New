@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
 # Enter the URL of the site
-url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=7&class=-114'
+url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-71'
 
 # Toggle if browser is headless or not
 headless_check = False
@@ -80,9 +80,15 @@ for stunda in stundas:
     xpos = element_top.get_attribute('x')
     length = element_top.get_attribute('width')
     data = stunda.get_property('innerHTML').splitlines()
-    subject = data[0]
-    teacher = data[1]
-    room = data[2]
+
+    if len(data) != 3:
+        subject = data[0]
+        room = data[1]
+        teacher = ""
+    else:
+        subject = data[0]
+        room = data[1]
+        teacher = data[2]
 
     day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos))
 
