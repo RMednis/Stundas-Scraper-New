@@ -94,7 +94,7 @@ for stunda in stundas:
 
 # Iterates through each day and sorts items by their x coords
 for day in day_id:
-    day_id[day].sort(key=lambda item: item.x)  # Takes x coordinate as the key
+    day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key
 
 json_data = '{"Server": {},"Dienas": {'
 
