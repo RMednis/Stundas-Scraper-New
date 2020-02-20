@@ -11,7 +11,8 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
 # Enter the URL of the site
-url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-71'
+url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-114'
+# url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80' # broken url
 
 # Toggle if browser is headless or not
 headless_check = False
@@ -50,23 +51,24 @@ pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), 
 
 # Stundas objekts
 class stunda_object:
-    def __init__(self, nosaukums, skolotajs, kabinets, x, y):
+    def __init__(self, nosaukums, skolotajs, kabinets, x, y, group):
         self.nosaukums = nosaukums
         self.skolotajs = skolotajs
         self.kabinets = kabinets
+        self.group = group
         self.x = x
         self.y = y
         self.length = 0
 
     def addLength(self, len):
         if len == 0:
-            self.length = -1    # FULL DAY
+            self.length = -1  # FULL DAY
         elif len < 0 and abs(len) % 2 == 0:
-            self.length = 2.0   # Last hour of the day is 2 hours long
+            self.length = 2.0  # Last hour of the day is 2 hours long
         elif len < 0 and abs(len) % 2 != 0:
-            self.length = 1.0   # Last hour of the day is 1 hour long
+            self.length = 1.0  # Last hour of the day is 1 hour long
         else:
-            self.length = len   # Last hour of the day is length long
+            self.length = len  # Last hour of the day is length long
 
 
 day_id = {
@@ -84,36 +86,44 @@ day_name = {
     1338: "Ceturtdiena",
     1644: "Piektdiena"
 }
+# Weird ypos gonna need a fix
+weird_ypos = [573, 879, 1185, 1491]
 one_hour_length = 256.5
 
 for stunda in stundas:
     element_top = stunda.find_element(By.XPATH, './..')
-    print(element_top)
     ypos = element_top.get_attribute('y')
     xpos = element_top.get_attribute('x')
     length = element_top.get_attribute('width')
     data = stunda.get_property('innerHTML').splitlines()
-    subject_length_hours = 0
-    if len(data) != 3:
-        subject = data[0]
-        room = data[1]
-        teacher = ""
-        subject_length_hours = -1  # Full day
-    else:
-        subject = data[0]
-        room = data[1]
-        teacher = data[2]
-    day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos))
+
+    # TODO: FIX THIS: https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80 WEIRD HOURS
+    # TEMP FIX!
+    if not float(ypos) in weird_ypos:
+        # If theres no teacher field its probably full day
+        if len(data) != 3:
+            subject = data[0]
+            room = data[1]
+            teacher = ""
+            group = "" # group is 1. index of data
+        else:
+            subject = data[0]
+            room = data[1]
+            teacher = data[2]
+            group = ""
+
+        # Add subject object to list
+        day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos, ""))
 
 # Iterates through each day and sorts items by their x coords
 for day in day_id:
     day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key
-    
+
     # Adds subject length
     for item in day_id[day]:
         # Adds length to previous item 3AM NO IDEA HOW THIS SH1T WORKS(-1 = Fullday; 1.0 = 1 hour; 2.0 = 2 hours)
-        day_id[day][day_id[day].index(item) - 1].addLength((float(item.x) - float(day_id[day][day_id[day].index(item) - 1].x)) / one_hour_length)
-
+        day_id[day][day_id[day].index(item) - 1].addLength(
+            (float(item.x) - float(day_id[day][day_id[day].index(item) - 1].x)) / one_hour_length)
 
 json_data = '{"Server": {},"Dienas": {'
 
