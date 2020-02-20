@@ -56,6 +56,17 @@ class stunda_object:
         self.kabinets = kabinets
         self.x = x
         self.y = y
+        self.length = 0
+
+    def addLength(self, len):
+        if len == 0:
+            self.length = -1    # FULL DAY
+        elif len < 0 and abs(len) % 2 == 0:
+            self.length = 2.0   # Last hour of the day is 2 hours long
+        elif len < 0 and abs(len) % 2 != 0:
+            self.length = 1.0   # Last hour of the day is 1 hour long
+        else:
+            self.length = len   # Last hour of the day is length long
 
 
 day_id = {
@@ -73,35 +84,44 @@ day_name = {
     1338: "Ceturtdiena",
     1644: "Piektdiena"
 }
+one_hour_length = 256.5
 
 for stunda in stundas:
     element_top = stunda.find_element(By.XPATH, './..')
+    print(element_top)
     ypos = element_top.get_attribute('y')
     xpos = element_top.get_attribute('x')
     length = element_top.get_attribute('width')
     data = stunda.get_property('innerHTML').splitlines()
-
+    subject_length_hours = 0
     if len(data) != 3:
         subject = data[0]
         room = data[1]
         teacher = ""
+        subject_length_hours = -1  # Full day
     else:
         subject = data[0]
         room = data[1]
         teacher = data[2]
-
     day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos))
 
 # Iterates through each day and sorts items by their x coords
 for day in day_id:
     day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key
+    
+    # Adds subject length
+    for item in day_id[day]:
+        # Adds length to previous item 3AM NO IDEA HOW THIS SH1T WORKS(-1 = Fullday; 1.0 = 1 hour; 2.0 = 2 hours)
+        day_id[day][day_id[day].index(item) - 1].addLength((float(item.x) - float(day_id[day][day_id[day].index(item) - 1].x)) / one_hour_length)
+
 
 json_data = '{"Server": {},"Dienas": {'
 
 
 # Function that returns json array element in string
-def pievienot_stundu(subject, teacher, room):
-    return '{"Prieksmets":"' + subject + '","Skolotajs":"' + teacher + '","Telpa":"' + room + '"}'
+def pievienot_stundu(subject, teacher, room, length):
+    return '{"Prieksmets":"' + subject + '","Skolotajs":"' + teacher + '","Telpa":"' + room + '","Ilgums":"' + str(length) + '"}'
+
 
 # Index to keep track of each
 temp_index = 0
@@ -116,7 +136,7 @@ for day in day_id:
         temp_index += 1
 
         # Add each subject to current json string using pievienot_stundu function
-        json_data += pievienot_stundu(stunda.nosaukums, stunda.skolotajs, stunda.kabinets)
+        json_data += pievienot_stundu(stunda.nosaukums, stunda.skolotajs, stunda.kabinets, stunda.length)
 
         # If its not the last subject, then add a comma to seperate array elements
         if len(day_id[day]) != temp_index:
