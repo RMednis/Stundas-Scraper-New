@@ -11,8 +11,8 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
 # Enter the URL of the site
-url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-114'
-# url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80' # broken url
+# url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-114'
+url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80'  # Weird cell link
 
 # Toggle if browser is headless or not
 headless_check = False
@@ -62,7 +62,10 @@ class stunda_object:
 
     def addLength(self, len):
         if len == 0:
-            self.length = -1  # FULL DAY
+            if self.group == "2.grupa":
+                self.length = 2.0  # TEMP FIX NEED TO LOOK INTO IT
+            else:
+                self.length = -1  # FULL DAY
         elif len < 0 and abs(len) % 2 == 0:
             self.length = 2.0  # Last hour of the day is 2 hours long
         elif len < 0 and abs(len) % 2 != 0:
@@ -87,7 +90,7 @@ day_name = {
     1644: "Piektdiena"
 }
 # Weird ypos gonna need a fix
-weird_ypos = [573, 879, 1185, 1491]
+weird_ypos_bottom = [573, 879, 1185, 1491]
 one_hour_length = 256.5
 
 for stunda in stundas:
@@ -99,21 +102,28 @@ for stunda in stundas:
 
     # TODO: FIX THIS: https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80 WEIRD HOURS
     # TEMP FIX!
-    if not float(ypos) in weird_ypos:
-        # If theres no teacher field its probably full day
-        if len(data) != 3:
-            subject = data[0]
-            room = data[1]
-            teacher = ""
-            group = "" # group is 1. index of data
-        else:
-            subject = data[0]
-            room = data[1]
-            teacher = data[2]
-            group = ""
+    if len(data) == 4:
+        if float(ypos) in weird_ypos_bottom:   # If theres no teacher field its probably full day
+            ypos = list(day_id)[weird_ypos_bottom.index(int(ypos))]
 
-        # Add subject object to list
-        day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos, ""))
+        subject = data[0]
+        group = data[1]
+        teacher = data[2]
+        room = data[3]
+
+    elif len(data) != 3:
+        subject = data[0]
+        room = data[1]
+        teacher = ""
+        group = ""
+    else:
+        subject = data[0]
+        room = data[1]
+        teacher = data[2]
+        group = ""
+
+    # Add subject object to list
+    day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos, group))
 
 # Iterates through each day and sorts items by their x coords
 for day in day_id:
@@ -129,8 +139,8 @@ json_data = '{"Server": {},"Dienas": {'
 
 
 # Function that returns json array element in string
-def pievienot_stundu(subject, teacher, room, length):
-    return '{"Prieksmets":"' + subject + '","Skolotajs":"' + teacher + '","Telpa":"' + room + '","Ilgums":"' + str(length) + '"}'
+def pievienot_stundu(subject, teacher, room, length, group):
+    return '{"Prieksmets":"' + subject + '","Skolotajs":"' + teacher + '","Telpa":"' + room + '","Ilgums":"' + str(length) + '","Grupa":"' + group + '"}'
 
 
 # Index to keep track of each
@@ -146,7 +156,7 @@ for day in day_id:
         temp_index += 1
 
         # Add each subject to current json string using pievienot_stundu function
-        json_data += pievienot_stundu(stunda.nosaukums, stunda.skolotajs, stunda.kabinets, stunda.length)
+        json_data += pievienot_stundu(stunda.nosaukums, stunda.skolotajs, stunda.kabinets, stunda.length, stunda.group)
 
         # If its not the last subject, then add a comma to seperate array elements
         if len(day_id[day]) != temp_index:
