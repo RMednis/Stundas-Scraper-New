@@ -45,8 +45,8 @@ def DaySorter(stundas):
     for stunda in stundas:
         element_top = stunda.find_element(By.XPATH, './..')  # Gets the entire lesson block, not just the text!
         ypos = element_top.get_attribute('y')  # The y position of the lesson block!
-        xpos = element_top.get_attribute('x')  # The x position of the lesson block!
-        length = element_top.get_attribute('width')  # The width of the lesson block, used to calculate the time!
+        xpos = element_top.get_attribute('x')  # The x possition of the lesson block!
+        length = element_top.get_attribute('width')  # The width of the lession block, used to calculate the time!
         data = stunda.get_property('innerHTML').splitlines()  # The text... split by /n
 
         # TODO: FIX THIS: https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80 WEIRD HOURS
@@ -85,4 +85,11 @@ def DaySorter(stundas):
             day_id[day][day_id[day].index(item) - 1].addLength(
                 (float(item.x) - float(day_id[day][day_id[day].index(item) - 1].x)) / one_hour_length)
 
-    return
+    print('Creating JSON objects/string!')
+
+    print(day_id)
+    print(json.dumps(day_id, default=lambda x: x.__dict__))
+
+    print('Outputting data!')
+
+    return json.dumps(day_id, default=lambda x: x.__dict__)
