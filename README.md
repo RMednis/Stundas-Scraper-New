@@ -48,7 +48,7 @@ python3 Main.py
 
 In development...
 
-##ToDo
+## ToDo
 - [x] Single Timetable Scraping
 - [x] Lesson sorting by time/day
 - [ ] Multiple Timetable Scraping
