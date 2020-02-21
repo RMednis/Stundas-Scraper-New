@@ -21,7 +21,7 @@ import time
 
 def scrapeStundas(url: str):
     opts = Options()
-    headless_check = False
+    headless_check = True
 
     print('Headless: ', headless_check)
     print('URL:      ', url)
