@@ -1,18 +1,21 @@
-env:
-  global:
-    - MOZ_HEADLESS=1
+language: python
+
 addons:
   firefox: latest
-language: python
+
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
-# command to install dependencies
+
 install:
   - pip install -r requirements.txt
-# command to run tests
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
+  - tar -xvzf geckodriver-v0.26.0-linux64.tar.gz
+  - chmod +x geckodriver
+  - mv geckodriver /usr/local/bin
+
+
 script:
   - python3 Main.py
