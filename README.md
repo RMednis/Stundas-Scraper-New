@@ -67,7 +67,7 @@ In development...
 - [ ] API Response **(Partial)**
 - [ ] Handling of empty lessons
 - [ ] Handling of multiple lessons at once **(Partial)**
-- [ ] Lesson time calculation
+- [x] Lesson time calculation
 - [ ] API Group Listing
 
 ## Authors
