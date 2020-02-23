@@ -79,8 +79,8 @@ def DaySorter(stundas):
     print('Creating JSON objects/string!')
 
     print(day_id)
-    print(json.dumps(day_id, default=lambda x: x.__dict__))
+    print(json.dumps(day_id, default=lambda x: x.__dict__, ensure_ascii=False))
 
     print('Outputting data!')
 
-    return json.dumps(day_id, default=lambda x: x.__dict__)
+    return json.dumps(day_id, default=lambda x: x.__dict__, ensure_ascii=False)
