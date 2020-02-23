@@ -2,6 +2,18 @@
 
 Scrapes lesson data and times from the [OVT Edupage](https://ogrestehnikums.edupage.org) based timetables, creates a JSON REST API for use with other frontend apps.
 
+## About
+
+This project is based with the specific formatting of the OVT timetables in mind. `Scraper.py` should work with most timetable formats,
+but `Sorter.py` has hard coded values, that are only meant for OVT's formatting.
+
+Some additional points:
+
+- All lessons are split into 45 minute segments. This is done to make all lessons standard, this also counts on the fact that
+no lesson is shorter than 45 minutes.
+- The generated api does not take into account breaks. These have to be done in the frontend parts, since they change.
+
+
 ## Getting Started
 
 This project is based on Python 3.7, and uses the Selenium browser automation suite for scraping.

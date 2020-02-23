@@ -7,26 +7,12 @@ def DaySorter(stundas):
     # Stundas objekts
     class stunda_object:
         def __init__(self, nosaukums, skolotajs, kabinets, x, y, group):
-            self.nosaukums = nosaukums
-            self.skolotajs = skolotajs
-            self.kabinets = kabinets
-            self.group = group
-            self.x = x
-            self.y = y
-            self.length = 0
-
-        def addLength(self, len):
-            if len == 0:
-                if self.group == "2.grupa":
-                    self.length = 2.0  # TEMP FIX NEED TO LOOK INTO IT
-                else:
-                    self.length = -1  # FULL DAY
-            elif len < 0 and abs(len) % 2 == 0:
-                self.length = 2.0  # Last hour of the day is 2 hours long
-            elif len < 0 and abs(len) % 2 != 0:
-                self.length = 1.0  # Last hour of the day is 1 hour long
-            else:
-                self.length = len  # Last hour of the day is length long
+            self.nosaukums = nosaukums  # Subject name
+            self.skolotajs = skolotajs  # Subject Teacher
+            self.kabinets = kabinets  # Subject Room
+            self.group = group  # Group (if multiple subjects are for different subgroups)
+            self.x = x  # Object X coordinate
+            self.y = y  # Object Y coordinate
 
 
     day_id = {
@@ -39,14 +25,14 @@ def DaySorter(stundas):
 
     # Weird ypos gonna need a fix
     weird_ypos_bottom = [573, 879, 1185, 1491]
-    one_hour_length = 256.5
+    single_lesson_length = 256.5
 
     print('Pulling lessons to objects!')
     for stunda in stundas:
         element_top = stunda.find_element(By.XPATH, './..')  # Gets the entire lesson block, not just the text!
         ypos = element_top.get_attribute('y')  # The y position of the lesson block!
-        xpos = element_top.get_attribute('x')  # The x possition of the lesson block!
-        length = element_top.get_attribute('width')  # The width of the lession block, used to calculate the time!
+        xpos = element_top.get_attribute('x')  # The x position of the lesson block!
+        length = element_top.get_attribute('width')  # The width of the lesson block, used to calculate the time!
         data = stunda.get_property('innerHTML').splitlines()  # The text... split by /n
 
         # TODO: FIX THIS: https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80 WEIRD HOURS
@@ -72,18 +58,23 @@ def DaySorter(stundas):
             group = ""
 
         # Add subject object to list
-        day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos, group))
+
+        current_day = day_id[int(ypos)]  # Finds the current day based on the subjects y position
+        lesson_length = (
+                    float(length) / single_lesson_length)  # Calculates how many 45 minute segments the lesson takes up!
+        lesson_count = 0  # Sets the counting veriable
+
+        while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a list
+            lesson_xpos = float(
+                xpos) + lesson_count  # Increments the xpos, so each segment get sorted after each other.
+            current_day.append(
+                stunda_object(subject, teacher, room, lesson_xpos, ypos, group))  # Appends the subject to the day
+            lesson_count += 1  # Appends 1 to the loop/lesson counter
 
     print('Sorting lessons by day')
     # Iterates through each day and sorts items by their x coords
     for day in day_id:
-        day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key
-
-        # Adds subject length
-        for item in day_id[day]:
-            # Adds length to previous item 3AM NO IDEA HOW THIS SH1T WORKS(-1 = Fullday; 1.0 = 1 hour; 2.0 = 2 hours)
-            day_id[day][day_id[day].index(item) - 1].addLength(
-                (float(item.x) - float(day_id[day][day_id[day].index(item) - 1].x)) / one_hour_length)
+        day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
 
     print('Creating JSON objects/string!')
 
