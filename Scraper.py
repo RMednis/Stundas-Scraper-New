@@ -15,13 +15,14 @@ import time
 
 # url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80  # Weird cell link
 
+browser = 0
 
 # Toggle if browser is headless or not
 
-
-def scrapeStundas(url: str):
+def startBrowser(url):
+    global browser
     opts = Options()
-    headless_check = True
+    headless_check = False
 
     print('Headless: ', headless_check)
     print('URL:      ', url)
@@ -43,9 +44,17 @@ def scrapeStundas(url: str):
         print("Failed - Timeout loading main page!")  # Error Message
         exit(100)  # Exit Gracefully
 
+
+def scrapeStundas():
+    global browser
     print('Locating and parsing SVG elements!')
 
     stundas = browser.find_elements_by_xpath(
         "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']")
 
     return stundas
+
+
+def closeBrowser():
+    global browser
+    browser.quit()

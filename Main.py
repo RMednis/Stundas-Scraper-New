@@ -49,9 +49,20 @@ class Settings:
         URL = config['BROWSER']['ScrapeURL']
 
 
-# Pull the scraped data!
-Scraped_Data = Scraper.scrapeStundas(Settings.Scraper.URL)
+'''
+Data Scraping
+'''
 
+# Start web browser
+Scraper.startBrowser(Settings.Scraper.URL)
+
+# Scrape initial page
+Scraped_Data = Scraper.scrapeStundas()
+
+# Sort scraped data
 Test = Sorter.DaySorter(Scraped_Data)
 
 print(Test)
+
+# Close browser cleanly
+Scraper.closeBrowser()
