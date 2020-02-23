@@ -14,6 +14,14 @@ def DaySorter(stundas):
             self.x = x  # Object X coordinate
             self.y = y  # Object Y coordinate
 
+    week = {
+        "Pirmdiena": pirmdiena,
+        "Otrdiena": otrdiena,
+        "Trešdiena": tresdiena,
+        "Ceturtdiena": ceturdiena,
+        "Piektdiena": piekdiena
+
+    }
 
     day_id = {
         420: pirmdiena,
@@ -73,14 +81,11 @@ def DaySorter(stundas):
 
     print('Sorting lessons by day')
     # Iterates through each day and sorts items by their x coords
-    for day in day_id:
-        day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
+    for day in week:
+        week[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
 
     print('Creating JSON objects/string!')
 
-    print(day_id)
-    print(json.dumps(day_id, default=lambda x: x.__dict__, ensure_ascii=False))
-
     print('Outputting data!')
 
-    return json.dumps(day_id, default=lambda x: x.__dict__, ensure_ascii=False)
+    return json.dumps(week, default=lambda x: x.__dict__, ensure_ascii=False)
