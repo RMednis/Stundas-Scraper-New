@@ -68,13 +68,9 @@ def DaySorter(stundas):
         lesson_count = 0  # Sets the counting veriable
 
         while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a list
-            # It's the second half of the lesson
-            if lesson_count == 1:
-                # Increments the xpos, so each segment get sorted after each other.
-                lesson_xpos = float(xpos) + single_lesson_length
-            else:
-                lesson_xpos = float(xpos)
-                
+            # If its second half of the lesson add single lesson length
+            lesson_xpos = float(xpos) + lesson_count * single_lesson_length
+
             current_day.append(
                 stunda_object(subject, teacher, room, lesson_xpos, ypos, group))  # Appends the subject to the day
             lesson_count += 1  # Appends 1 to the loop/lesson counter
