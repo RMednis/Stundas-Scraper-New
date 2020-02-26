@@ -56,8 +56,8 @@ def DaySorter(stundas):
             group = ""
         else:
             subject = data[0]
-            room = data[1]
-            teacher = data[2]
+            teacher = data[1]
+            room = data[2]
             group = ""
 
         # Add subject object to list
@@ -95,4 +95,4 @@ def DaySorter(stundas):
 
     print('Outputting data!')
 
-    return json.dumps(week, default=lambda x: x.__dict__, ensure_ascii=False)
+    return json.dumps(week, default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
