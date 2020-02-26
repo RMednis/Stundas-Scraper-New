@@ -57,4 +57,6 @@ def scrapeStundas():
 
 def closeBrowser():
     global browser
+
+    print('Closing browser!')
     browser.quit()
