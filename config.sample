@@ -1,0 +1,14 @@
+[STEPS]
+scraper = True
+sorter = True
+apigenerate = True
+
+[BROWSER]
+browserheadless = True
+scrapeurl = https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-114
+closeafter = True
+
+[SCRAPER]
+newviewer = False
+scrapealltables = False
+
