@@ -65,7 +65,7 @@ In development...
 - [x] Lesson sorting by time/day
 - [ ] Multiple Timetable Scraping
 - [ ] API Response **(Partial)**
-- [ ] Handling of empty lessons
+- [x] Handling of empty lessons
 - [ ] Handling of multiple lessons at once **(Partial)**
 - [x] Lesson time calculation
 - [ ] API Group Listing
