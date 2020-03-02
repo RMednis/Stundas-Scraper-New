@@ -5,7 +5,7 @@ import configparser
 import Sorter
 import Scraper
 import Config
-import API_Generate
+import Service_Connect
 
 print('----------------------------------------------------')
 print('Timetable Scraping, Sorting and API creation script!')
@@ -26,9 +26,11 @@ Scraper.startBrowser(Config.Settings.Browser.URL)
 Scraped_Data = Scraper.scrapeStundas()
 
 # Sort scraped data
-Test = Sorter.DaySorter(Scraped_Data)
+Current_Lessons = Sorter.DaySorter(Scraped_Data)
 
-print(Test)
+# TODO: Use selector in settings to see, which export method to use!
+# Service_Connect.export_to_mongo('Skoleni', Current_Lessons)
+print(Current_Lessons)
 
 # Close browser cleanly, if selected
 Scraper.closeBrowser()

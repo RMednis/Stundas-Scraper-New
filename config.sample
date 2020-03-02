@@ -12,3 +12,11 @@ closeafter = True
 newviewer = False
 scrapealltables = False
 
+[DATABASE]
+used = False
+ip = 127.0.0.1
+port = 27017
+database = CI-Database
+user = user
+password = pass
+

@@ -39,6 +39,15 @@ def FirstLaunch():
         'ScrapeAllTables': 'False'
     }
 
+    config['DATABASE'] = {
+        'Used': 'False',
+        'IP': '0.0.0.0',
+        'Port': '27017',
+        'Database': 'Stundas',
+        'User': 'User',
+        'Password': 'P@ssW0rd!'
+    }
+
     # Checks if a config file already exists, if it doesn't, creates a default one!
     if not config.read(configPath):
         print('No {} file found! Creating a default one!'.format(configPath))
@@ -56,3 +65,11 @@ def FirstLaunch():
         class Scraper:
             UseNewMethod = config['SCRAPER'].getboolean('NewViewer')
             Scrape_All = config['SCRAPER'].getboolean('ScrapeAllTables')
+
+        class Database:
+            Enabled = config['DATABASE'].getboolean('Used')
+            IP = config['DATABASE']['IP']
+            Port = config['DATABASE']['Port']
+            Database = config['DATABASE']['DATABASE']
+            User = config['DATABASE']['User']
+            Pass = config['DATABASE']['Password']

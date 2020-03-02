@@ -1,17 +1,23 @@
 # Stundas Scraper
 
-Scrapes lesson data and times from the [OVT Edupage](https://ogrestehnikums.edupage.org) based timetables, creates a JSON REST API for use with other frontend apps.
+Scrapes lesson data and times from the [OVT Edupage](https://ogrestehnikums.edupage.org) based timetables, exports this 
+to a MongoDB server.
 
 ## About
+Stundas Scraper is a web scraper, that automatically pulls data from OVT's Edupage based time tables, sorts them, and
+converts them into easily usable objects, that are used for a multitude of tasks.  
 
-This project is based with the specific formatting of the OVT timetables in mind. `Scraper.py` should work with most timetable formats,
-but `Sorter.py` has hard coded values, that are only meant for OVT's formatting.
+This project is based with the specific formatting of the OVT timetables in mind. `Scraper.py` should work with most 
+timetable formats, but `Sorter.py` has hard coded values, that are only meant for OVT's specific timetable formatting.
 
-Some additional points:
+#### Some additional points:
 
-- All lessons are split into 45 minute segments. This is done to make all lessons standard, this also counts on the fact that
-no lesson is shorter than 45 minutes.
-- The generated api does not take into account breaks. These have to be done in the frontend parts, since they change.
+- All lessons are split into 45 minute segments. This is done to make all lessons standard, this also counts on the fact
+that no lesson is shorter than 45 minutes.
+- The exported data does not calculate or approximate breaks between 45 minute lessons. This should be done on the 
+front-end apps.
+- The scripts can both - export to a MongoDB database server, or generate a static JSON output file, this can be set
+in the configuration file generated on first start.
 
 
 ## Getting Started
@@ -64,16 +70,21 @@ In development...
 - [x] Single Timetable Scraping
 - [x] Lesson sorting by time/day
 - [ ] Multiple Timetable Scraping
-- [ ] API Response **(Partial)**
+- [x] Database connection
+- [ ] Export data to database **(Partial)**
+- [X] Export data to JSON files.
 - [x] Handling of empty lessons
 - [ ] Handling of multiple lessons at once **(Partial)**
 - [x] Lesson time calculation
-- [ ] API Group Listing
+- [ ] Export Group Listing
+- [ ] Support for teacher tables
+- [ ] Support for room tables
+- [x] Support for new timetable viewer
 
 ## Authors
 
-* **Reinis Gunārs Mednis** - *Initial Work, Scraping, API* - [RMednis](https://github.com/RMednis)
-* **Ikars Melnalksnis** - *Initial Work, Sorting, API* - [Lyx52](https://github.com/Lyx52)
+* **Reinis Gunārs Mednis** - *Initial Work, Scraping, Database Connections* - [RMednis](https://github.com/RMednis)
+* **Ikars Melnalksnis** - *Initial Work, Sorting, JSON Response creation* - [Lyx52](https://github.com/Lyx52)
 
 ## License
 

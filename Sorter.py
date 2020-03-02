@@ -95,4 +95,4 @@ def DaySorter(stundas):
 
     print('Outputting data!')
 
-    return json.dumps(week, default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
+    return week
