@@ -28,8 +28,12 @@ Scraped_Data = Scraper.scrapeStundas()
 # Sort scraped data
 Current_Lessons = Sorter.DaySorter(Scraped_Data)
 
-# TODO: Use selector in settings to see, which export method to use!
-# Service_Connect.export_to_mongo('Skoleni', Current_Lessons)
+# Depending on settings it will either export to database or json file
+if Config.Settings.Database.Enabled:
+    Service_Connect.export_to_mongo('Skoleni', Current_Lessons)
+else:
+    Service_Connect.ExportToFile(Current_Lessons)
+
 print(Current_Lessons)
 
 # Close browser cleanly, if selected

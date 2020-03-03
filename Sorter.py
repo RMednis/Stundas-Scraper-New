@@ -15,15 +15,15 @@ def DaySorter(stundas):
             self.y = y  # Object Y coordinate
             self.index = 0  # Index to determine lectures columnar position
 
-        def __repr__(self):
+        def get_dict(self):
             # Helps to remove the unnecessary information
-            return str({
+            return {
                 'nosaukums': self.nosaukums,
                 'skolotajs': self.skolotajs,
                 'kabinets': self.kabinets,
                 'group': self.group,
                 'index': self.index
-            })
+            }
     week = {
         "Pirmdiena": pirmdiena,
         "Otrdiena": otrdiena,
@@ -102,6 +102,6 @@ def DaySorter(stundas):
                 # Calculating how many lectures are in between last and current lecture + last lecture index
                 lecture.index = ((lecture.x - last_lecture.x) / single_lesson_length) + last_lecture.index
     print('Creating JSON objects/string!')
-    print(week["Pirmdiena"][0].__repr__)
+
     print('Outputting data!')
     return week

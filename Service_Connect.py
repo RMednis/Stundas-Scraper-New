@@ -34,7 +34,7 @@ def export_to_mongo(collection_name, data):
     # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
     #  directly!
 
-    object_json = json.dumps(data, default=lambda x: x.__repr__, ensure_ascii=False,
+    object_json = json.dumps(data, default=lambda x: x.get_dict(), ensure_ascii=False,
                              indent=4)  # Converts to json corectly
     object_json = json.loads(object_json)  # Reads the json string
 
@@ -47,17 +47,24 @@ def export_to_mongo(collection_name, data):
 
     collection.insert_one(db_data)  # Places the created object into the database!
 
-
+    # for x in collection.find():
+    #     print(x)
 '''
 File Export Functions
 '''
 
 
 # Function, that exports the JSON response to a file
-# TODO: Make it actually export to file, not just print!
 def ExportToFile(object):
-    object_json = json.dumps(object, default=lambda x: x.__repr__, ensure_ascii=False, indent=4)
-    print(object_json)
+    class_name = "3DT-1"    # TODO: Make this dynamic!
+
+    # Creates a template and saves it to a file
+    json.dump(
+        {
+            "class": class_name,
+            "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
+            "lessons": json.loads(json.dumps(object, default=lambda x: x.get_dict()))  # The actual week lesson object!
+        }, open(class_name + '_data.json', 'w'), ensure_ascii=False, indent=4)
 
 
 '''
