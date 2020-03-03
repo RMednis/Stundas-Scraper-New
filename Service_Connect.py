@@ -34,7 +34,7 @@ def export_to_mongo(collection_name, data):
     # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
     #  directly!
 
-    object_json = json.dumps(data, default=lambda x: x.__dict__, ensure_ascii=False,
+    object_json = json.dumps(data, default=lambda x: x.__repr__, ensure_ascii=False,
                              indent=4)  # Converts to json corectly
     object_json = json.loads(object_json)  # Reads the json string
 
@@ -56,7 +56,7 @@ File Export Functions
 # Function, that exports the JSON response to a file
 # TODO: Make it actually export to file, not just print!
 def ExportToFile(object):
-    object_json = json.dumps(object, default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
+    object_json = json.dumps(object, default=lambda x: x.__repr__, ensure_ascii=False, indent=4)
     print(object_json)
 
 
