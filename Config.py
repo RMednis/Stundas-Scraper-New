@@ -41,7 +41,7 @@ def FirstLaunch():
 
     config['DATABASE'] = {
         'Used': 'False',
-        'IP': '0.0.0.0',
+        'IP': 'localhost',
         'Port': '27017',
         'Database': 'Stundas',
         'User': 'User',

@@ -16,14 +16,14 @@ def DaySorter(stundas):
             self.index = 0  # Index to determine lectures columnar position
 
         def get_dict(self):
-            # Helps to remove the unnecessary information
+            # Can be used to get the necessary information
             return {
-                'nosaukums': self.nosaukums,
-                'skolotajs': self.skolotajs,
-                'kabinets': self.kabinets,
-                'group': self.group,
-                'index': self.index
-            }
+                        'nosaukums': self.nosaukums,
+                        'skolotajs': self.skolotajs,
+                        'kabinets': self.kabinets,
+                        'group': self.group,
+                        'index': self.index
+                   }
     week = {
         "Pirmdiena": pirmdiena,
         "Otrdiena": otrdiena,

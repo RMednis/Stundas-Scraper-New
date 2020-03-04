@@ -13,6 +13,26 @@ exporting it to a MongoDB document for later use with an frontend application or
 '''
 
 '''
+Utility functions
+'''
+
+
+# Function that makes a data model from sorter data object
+def make_data_model(data, class_name):
+    return {
+                "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
+                "lessons": json.loads(json.dumps(data, default=lambda x: x.get_dict())),    # Dump/load data to json
+                "class": class_name
+           }
+
+
+# Function that prints current collection, mainly for debugging
+def print_db(collection):
+    for x in collection.find():
+        print(x)
+
+
+'''
 Database Export Functions
 '''
 
@@ -21,6 +41,8 @@ Database Export Functions
 def export_to_mongo(collection_name, data):
     #  TODO: Possibly seperate this into multiple functions!
     settings = Config.Settings  # Makes the settings object easier to use
+    class_name = "3DT-1"  # TODO: Make this dynamic!
+
     client = MongoClient(
         settings.Database.IP,  # The Mongo server ip, pulled from config
         username=settings.Database.User,  # The Mongo user, also from config
@@ -29,42 +51,28 @@ def export_to_mongo(collection_name, data):
         authMechanism='SCRAM-SHA-256'  # The auth mechanism, should possibly make it configurable
     )
     database = client[settings.Database.Database]  # Gets the database, in which to write from the config file
+
+    database.drop_collection(collection_name)  # Deletes previous db collection
     collection = database[collection_name]  # Gets the current collection from the DB
 
+    collection.insert_one(make_data_model(data, class_name))  # Insert db template
+
+    print_db(collection)
     # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
     #  directly!
 
-    object_json = json.dumps(data, default=lambda x: x.get_dict(), ensure_ascii=False,
-                             indent=4)  # Converts to json corectly
-    object_json = json.loads(object_json)  # Reads the json string
 
-    # Sample data model
-    db_data = {
-        "class": "3DT-1",  # TODO: Make this dynamic!
-        "updated": datetime.datetime.now(),  # Gets the update time dynamically.
-        "lessons": object_json  # The actual week lesson object!
-    }
-
-    collection.insert_one(db_data)  # Places the created object into the database!
-
-    # for x in collection.find():
-    #     print(x)
 '''
 File Export Functions
 '''
 
 
 # Function, that exports the JSON response to a file
-def ExportToFile(object):
-    class_name = "3DT-1"    # TODO: Make this dynamic!
+def export_to_json(data):
+    class_name = "3DT-1"  # TODO: Make this dynamic!
 
     # Creates a template and saves it to a file
-    json.dump(
-        {
-            "class": class_name,
-            "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
-            "lessons": json.loads(json.dumps(object, default=lambda x: x.get_dict()))  # The actual week lesson object!
-        }, open(class_name + '_data.json', 'w'), ensure_ascii=False, indent=4)
+    json.dump(make_data_model(data, class_name), open(class_name + '_data.json', 'w'), ensure_ascii=False, indent=4)
 
 
 '''

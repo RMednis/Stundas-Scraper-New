@@ -32,7 +32,7 @@ Current_Lessons = Sorter.DaySorter(Scraped_Data)
 if Config.Settings.Database.Enabled:
     Service_Connect.export_to_mongo('Skoleni', Current_Lessons)
 else:
-    Service_Connect.ExportToFile(Current_Lessons)
+    Service_Connect.export_to_json(Current_Lessons)
 
 print(Current_Lessons)
 
