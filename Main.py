@@ -22,6 +22,9 @@ Config.FirstLaunch()
 # Start web browser
 Scraper.startBrowser(Config.Settings.Browser.URL)
 
+# Scrape classes
+Scraper.scrapeClasses()
+
 # Scrape initial page
 Scraped_Data = Scraper.scrapeStundas()
 

@@ -2,19 +2,18 @@
 # Scraper
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
 
-
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
+import requests, json
+from lxml import html
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver import Firefox
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 import Config
 
-# url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80  # Weird cell link
-
 browser = 0
-
 
 # Toggle if browser is headless or not
 
@@ -71,6 +70,35 @@ def scrapeStundas():
     stundas = browser.find_elements_by_xpath(path)
 
     return stundas
+
+
+def scrapeClasses():
+    # Get document from link and make a html tree out of it
+    response = requests.get('https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=-71')
+    if response.status_code == 200:
+        page_tree = html.fromstring(response.content)
+
+        # Find all scripts and remove newline chars
+        scripts = str(page_tree.xpath('//script[@type="text/javascript"]/text()')).replace('\\n', '')
+
+        # Find the start/end of the required json file
+        start = scripts.find('{"table":"classes"')
+        end = scripts.find(',{"table":"subjects"')
+
+        # Make the json from scripts char array
+        found_json = json.loads(scripts[start:end].replace("\'", ""))
+
+        # Dict that will hold scraped info from found_json
+        output_json = {}
+
+        for row in found_json['rows']:
+            # Each class has link with its own id
+            output_json[str(row['name'])] = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=' + row['id']
+
+        # Outputs file to a json file
+        json.dump(output_json, open('classes.json', 'w'), indent=4, ensure_ascii=False)
+    else:
+        print("Scraping failed with status code: " + response.status_code)
 
 
 def closeBrowser():

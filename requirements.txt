@@ -1,3 +1,5 @@
+lxml
+requests
 pymongo==3.10.1
 selenium==3.141.0
 simplejson==3.17.0
