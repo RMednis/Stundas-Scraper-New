@@ -1,7 +1,7 @@
 import json
 from selenium.webdriver.common.by import By
 
-def DaySorter(stundas):
+def DaySorter(scraped_data):
     pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
 
     # Stundas objekts
@@ -45,9 +45,11 @@ def DaySorter(stundas):
     single_lesson_length = 256.5
     first_lecture_xpos = 345.0    # Needed to determine if first lectures columnar position really is 0
 
+    class_name = scraped_data[1][0]
     print('Pulling lessons to objects!')
-    for stunda in stundas:
+    for stunda in scraped_data[0]:
         element_top = stunda.find_element(By.XPATH, './..')  # Gets the entire lesson block, not just the text!
+
         ypos = element_top.get_attribute('y')  # The y position of the lesson block!
         xpos = element_top.get_attribute('x')  # The x position of the lesson block!
         length = element_top.get_attribute('width')  # The width of the lesson block, used to calculate the time!
@@ -104,4 +106,6 @@ def DaySorter(stundas):
     print('Creating JSON objects/string!')
 
     print('Outputting data!')
+    week['class'] = class_name
+
     return week

@@ -2,6 +2,10 @@
 # Main Execution file
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
 import configparser
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+
 import Sorter
 import Scraper
 import Config
@@ -21,7 +25,9 @@ Config.FirstLaunch()
 
 # Start web browser
 Scraper.startBrowser(Config.Settings.Browser.URL)
-
+# print(Scraper.browser.find_element(By.XPATH,"//div[contains(@class, 'asc-ribbon')]//div[contains(@class, "
+#                                             "'left')]//div[contains(@class, 'asc-ribbon-button')]//div[contains("
+#                                             "@class, 'middle')]").get_attribute('innerHTML'))
 # Scrape classes
 Scraper.scrapeClasses()
 

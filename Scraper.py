@@ -15,9 +15,6 @@ import Config
 
 browser = 0
 
-# Toggle if browser is headless or not
-
-
 def startBrowser(url):
     global browser
     opts = Options()
@@ -56,7 +53,6 @@ def startBrowser(url):
 
 
 def scrapeStundas():
-    global browser
     new_viewer = Config.Settings.Scraper.UseNewMethod  # Check if new viewer enabled in settings
 
     print('Locating and parsing SVG elements!')
@@ -66,10 +62,11 @@ def scrapeStundas():
 
     else:  # Use the XPATH for the old version viewer
         path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
+        path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
 
     stundas = browser.find_elements_by_xpath(path)
-
-    return stundas
+    class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
+    return [stundas, class_name]
 
 
 def scrapeClasses():
@@ -93,7 +90,8 @@ def scrapeClasses():
 
         for row in found_json['rows']:
             # Each class has link with its own id
-            output_json[str(row['name'])] = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=' + row['id']
+            output_json[str(row['name'])] = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=' + row[
+                'id']
 
         # Outputs file to a json file
         json.dump(output_json, open('classes.json', 'w'), indent=4, ensure_ascii=False)

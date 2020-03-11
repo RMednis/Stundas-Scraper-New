@@ -41,7 +41,7 @@ Database Export Functions
 def export_to_mongo(collection_name, data):
     #  TODO: Possibly seperate this into multiple functions!
     settings = Config.Settings  # Makes the settings object easier to use
-    class_name = "3DT-1"  # TODO: Make this dynamic!
+    class_name = data['class']
 
     client = MongoClient(
         settings.Database.IP,  # The Mongo server ip, pulled from config
@@ -69,10 +69,8 @@ File Export Functions
 
 # Function, that exports the JSON response to a file
 def export_to_json(data):
-    class_name = "3DT-1"  # TODO: Make this dynamic!
-
     # Creates a template and saves it to a file
-    json.dump(make_data_model(data, class_name), open(class_name + '_data.json', 'w'), ensure_ascii=False, indent=4)
+    json.dump(make_data_model(data, data['class']), open(data['class'] + '_data.json', 'w'), ensure_ascii=False, indent=4)
 
 
 '''
