@@ -25,9 +25,19 @@ Config.FirstLaunch()
 
 # Start web browser
 Scraper.startBrowser(Config.Settings.Browser.URL)
-# print(Scraper.browser.find_element(By.XPATH,"//div[contains(@class, 'asc-ribbon')]//div[contains(@class, "
-#                                             "'left')]//div[contains(@class, 'asc-ribbon-button')]//div[contains("
-#                                             "@class, 'middle')]").get_attribute('innerHTML'))
+
+SelectorButton = Scraper.browser.find_element(By.XPATH, "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, "
+                                                        "'left')]//span[text()='Classes']")
+
+# Click on class selector
+# Open selection list
+SelectorButton.click()
+SelectionItems = Scraper.browser.find_elements_by_xpath("//div[contains(@class, 'asc dropDown')]"
+                                                       "//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a")
+print(len(SelectionItems))
+for item in SelectionItems:
+    print(item.get_attribute('innerHTML'))
+
 # Scrape classes
 Scraper.scrapeClasses()
 

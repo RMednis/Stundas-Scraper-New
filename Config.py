@@ -30,8 +30,8 @@ def FirstLaunch():
     # Browser scraper settings
     config['BROWSER'] = {
         'BrowserHeadless': 'True',
-        'ScrapeURL': 'https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=-114',
-        'CloseAfter': 'True'
+        'ScrapeURL': 'https://ogrestehnikums.edupage.org/timetable/',
+        'CloseAfter': 'False'
     }
 
     config['SCRAPER'] = {
@@ -40,7 +40,7 @@ def FirstLaunch():
     }
 
     config['DATABASE'] = {
-        'Used': 'True',
+        'Used': 'False',
         'IP': 'localhost',
         'Port': '27017',
         'Database': 'Stundas',

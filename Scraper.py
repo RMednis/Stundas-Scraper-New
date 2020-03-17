@@ -59,7 +59,7 @@ def scrapeStundas():
     # Check if the new/testing version of the timetable viewer is being used.
     if new_viewer:  # Use the XPATH for the new version viewer
         path = "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
-
+        path_class_name = "//div[contains(@class, 'print-nobreak')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
     else:  # Use the XPATH for the old version viewer
         path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
         path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
