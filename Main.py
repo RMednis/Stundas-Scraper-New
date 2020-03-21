@@ -23,6 +23,9 @@ Data Scraping
 # Generates the config file, if first launch
 Config.FirstLaunch()
 
+# Initialization
+
+
 # Start web browser
 Scraper.startBrowser(Config.Settings.Browser.URL)
 
@@ -32,14 +35,12 @@ SelectorButton = Scraper.browser.find_element(By.XPATH, "//div[contains(@class, 
 # Click on class selector
 # Open selection list
 SelectorButton.click()
-SelectionItems = Scraper.browser.find_elements_by_xpath("//div[contains(@class, 'asc dropDown')]"
-                                                       "//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a")
-print(len(SelectionItems))
-for item in SelectionItems:
-    print(item.get_attribute('innerHTML'))
+
+# Scrape class list
+ClassList = Scraper.scrapeList()
 
 # Scrape classes
-Scraper.scrapeClasses()
+# Scraper.scrapeClasses(Config.Settings.Browser.URL)
 
 # Scrape initial page
 Scraped_Data = Scraper.scrapeStundas()
@@ -49,8 +50,19 @@ Current_Lessons = Sorter.DaySorter(Scraped_Data)
 
 # Depending on settings it will either export to database or json file
 if Config.Settings.Database.Enabled:
-    Service_Connect.export_to_mongo('Skoleni', Current_Lessons)
+    # Connects to the Database
+    Database = Service_Connect.connect_to_mongo()
+    # Generates a DB data model from the returned data
+    Database_model = Service_Connect.make_data_model(Current_Lessons[0], Current_Lessons[1])
+    # Pass the modeled data to the DB
+    Service_Connect.export_to_mongo(Database, 'Skoleni', Database_model)
+
+    Service_Connect.export_to_mongo(Database, "Klases", ClassList)
 else:
+    # Creates the directory structure required, deletes old data
+    Service_Connect.json_initialize()
+
+    # Exports lesson data to file
     Service_Connect.export_to_json(Current_Lessons)
 
 print(Current_Lessons)

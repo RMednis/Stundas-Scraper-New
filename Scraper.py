@@ -69,9 +69,11 @@ def scrapeStundas():
     return [stundas, class_name]
 
 
-def scrapeClasses():
+# TODO: Rewrite this!
+"""
+def scrapeClasses(url):
     # Get document from link and make a html tree out of it
-    response = requests.get('https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=-71')
+    response = requests.get(url)
     if response.status_code == 200:
         page_tree = html.fromstring(response.content)
 
@@ -97,6 +99,18 @@ def scrapeClasses():
         json.dump(output_json, open('classes.json', 'w'), indent=4, ensure_ascii=False)
     else:
         print("Scraping failed with status code: " + response.status_code)
+"""
+
+
+def scrapeList():
+    SelectionItems = browser.find_elements_by_xpath("//div[contains(@class, 'asc dropDown')]"
+                                                    "//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a")
+    classes = list()
+
+    for item in SelectionItems:
+        classes.append(item.get_attribute('innerHTML'))
+
+    return classes
 
 
 def closeBrowser():

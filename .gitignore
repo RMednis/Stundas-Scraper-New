@@ -2,6 +2,7 @@
 /output.json
 /geckodriver.log
 /config.ini
+/classes.json
 
 # .idea folder
 /.idea/
