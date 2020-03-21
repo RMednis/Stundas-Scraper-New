@@ -29,12 +29,12 @@ Config.FirstLaunch()
 # Start web browser
 Scraper.startBrowser(Config.Settings.Browser.URL)
 
-SelectorButton = Scraper.browser.find_element(By.XPATH, "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, "
-                                                        "'left')]//span[text()='Classes']")
+# SelectorButton = Scraper.browser.find_element(By.XPATH, "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, "
+#                                                        "'left')]//span[text()='Classes']")
 
 # Click on class selector
 # Open selection list
-SelectorButton.click()
+# SelectorButton.click()
 
 # Scrape class list
 ClassList = Scraper.scrapeList()

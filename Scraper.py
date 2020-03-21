@@ -64,6 +64,7 @@ def scrapeStundas():
         path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
         path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
 
+
     stundas = browser.find_elements_by_xpath(path)
     class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
     return [stundas, class_name]
@@ -101,16 +102,26 @@ def scrapeClasses(url):
         print("Scraping failed with status code: " + response.status_code)
 """
 
-
+# Scrapes the list of people/classes/rooms from the page dropdown, so we know what
 def scrapeList():
-    SelectionItems = browser.find_elements_by_xpath("//div[contains(@class, 'asc dropDown')]"
-                                                    "//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a")
-    classes = list()
+    global browser
+    new_viewer = Config.Settings.Scraper.UseNewMethod
 
-    for item in SelectionItems:
-        classes.append(item.get_attribute('innerHTML'))
+    if new_viewer:  # Use the XPATH for the new version viewer
+        path = "//*[@id='docbody']/div[4]/div[3]/ul/li/a"
+    else:  # Use the XPATH for the old version viewer
+        path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
+    ListItems = browser.find_elements(By.XPATH, path)
+    names = list()
 
-    return classes
+    for item in ListItems:
+        name = {
+            "name": item.get_attribute('innerHTML')
+        }
+
+        names.append(name)
+
+    return names
 
 
 def closeBrowser():
