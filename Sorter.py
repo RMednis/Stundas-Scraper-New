@@ -106,6 +106,5 @@ def DaySorter(scraped_data):
     print('Creating JSON objects/string!')
 
     print('Outputting data!')
-    week['class'] = class_name
 
-    return week
+    return week, class_name

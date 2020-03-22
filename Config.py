@@ -48,6 +48,12 @@ def FirstLaunch():
         'Password': 'P@ssW0rd!'
     }
 
+    config['FILE'] = {
+        'Used': 'False',
+        'Path': './Export/',
+        'Suffix': '_data.json'
+    }
+
     # Checks if a config file already exists, if it doesn't, creates a default one!
     if not config.read(configPath):
         print('No {} file found! Creating a default one!'.format(configPath))
@@ -73,3 +79,8 @@ def FirstLaunch():
             Database = config['DATABASE']['DATABASE']
             User = config['DATABASE']['User']
             Pass = config['DATABASE']['Password']
+
+        class File:
+            Path = config['FILE']['Path']
+            Enabled = config['FILE'].getboolean('Used')
+            Suffix = config['FILE']['Suffix']

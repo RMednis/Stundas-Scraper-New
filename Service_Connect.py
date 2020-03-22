@@ -6,6 +6,8 @@ from pymongo import MongoClient
 import datetime
 import Config
 import json
+import os
+import shutil
 
 '''
 This script contains the functions necessary for generating and exporting a JSON API response to file, or 
@@ -18,12 +20,12 @@ Utility functions
 
 
 # Function that makes a data model from sorter data object
-def make_data_model(data, class_name):
+def make_data_model(lesson_data, class_name):
     return {
-                "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
-                "lessons": json.loads(json.dumps(data, default=lambda x: x.get_dict())),    # Dump/load data to json
-                "class": class_name
-           }
+        "class": class_name,
+        "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
+        "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
+    }
 
 
 # Function that prints current collection, mainly for debugging
@@ -36,12 +38,9 @@ def print_db(collection):
 Database Export Functions
 '''
 
-
 # Function, to connect to the MongoDB Database
-def export_to_mongo(collection_name, data):
-    #  TODO: Possibly seperate this into multiple functions!
+def connect_to_mongo():
     settings = Config.Settings  # Makes the settings object easier to use
-    class_name = data['class']
 
     client = MongoClient(
         settings.Database.IP,  # The Mongo server ip, pulled from config
@@ -52,10 +51,19 @@ def export_to_mongo(collection_name, data):
     )
     database = client[settings.Database.Database]  # Gets the database, in which to write from the config file
 
+    return database  # Returns database to caller function
+
+
+# Export the classes lessons to a
+def export_to_mongo(database, collection_name, data):
+    #
     database.drop_collection(collection_name)  # Deletes previous db collection
     collection = database[collection_name]  # Gets the current collection from the DB
 
-    collection.insert_one(make_data_model(data, class_name))  # Insert db template
+    if type(data) is list:
+        collection.insert_many(data)
+    else:
+        collection.insert_one(data)
 
     print_db(collection)
     # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
@@ -68,9 +76,35 @@ File Export Functions
 
 
 # Function, that exports the JSON response to a file
-def export_to_json(data):
+def lessons_to_json(lesson_data, class_name):
+    # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
+    file = open(Config.Settings.File.Path + class_name + Config.Settings.File.Suffix, 'w')
+
     # Creates a template and saves it to a file
-    json.dump(make_data_model(data, data['class']), open(data['class'] + '_data.json', 'w'), ensure_ascii=False, indent=4)
+    json.dump(make_data_model(lesson_data, class_name), file, ensure_ascii=False, indent=4)
+
+
+def list_to_json(list):
+    # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
+    file = open(Config.Settings.File.Path + 'classes.json', 'w')
+
+    # Creates a template and saves it to a file
+    json.dump(list, file, ensure_ascii=False, indent=4)
+
+def json_initialize():
+    folder = Config.Settings.File.Path
+
+    if os.path.isdir(folder):
+        print("Removing old data directory!")
+        shutil.rmtree(folder)
+
+    try:
+        print("Creating new directory in ", folder)
+        os.mkdir(folder)
+    except OSError:
+        print("Could not create directory in ", folder)
+    else:
+        print("Path Created Successfully!")
 
 
 '''

@@ -23,37 +23,49 @@ Data Scraping
 # Generates the config file, if first launch
 Config.FirstLaunch()
 
+# Initialization
+if Config.Settings.Database.Enabled:
+    # Connects to the Database
+    Database = Service_Connect.connect_to_mongo()
+else:
+    # Creates the directory structure required, deletes old data
+    Service_Connect.json_initialize()
+
 # Start web browser
 Scraper.startBrowser(Config.Settings.Browser.URL)
 
-SelectorButton = Scraper.browser.find_element(By.XPATH, "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, "
-                                                        "'left')]//span[text()='Classes']")
-
-# Click on class selector
-# Open selection list
-SelectorButton.click()
-SelectionItems = Scraper.browser.find_elements_by_xpath("//div[contains(@class, 'asc dropDown')]"
-                                                       "//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a")
-print(len(SelectionItems))
-for item in SelectionItems:
-    print(item.get_attribute('innerHTML'))
+# Scrape class list
+# [0] - Names only, [1] - Selenium Objects
+ClassList = Scraper.scrapeList()
 
 # Scrape classes
-Scraper.scrapeClasses()
+# Scraper.scrapeClasses(Config.Settings.Browser.URL)
 
 # Scrape initial page
 Scraped_Data = Scraper.scrapeStundas()
 
 # Sort scraped data
+# [0] - Timetable data object, [1] - Timetable Class name
 Current_Lessons = Sorter.DaySorter(Scraped_Data)
 
 # Depending on settings it will either export to database or json file
 if Config.Settings.Database.Enabled:
-    Service_Connect.export_to_mongo('Skoleni', Current_Lessons)
-else:
-    Service_Connect.export_to_json(Current_Lessons)
+    # Generates a DB data model from the returned data and the class name
+    Database_model = Service_Connect.make_data_model(Current_Lessons[0], Current_Lessons[1])
 
-print(Current_Lessons)
+    # Pass the modeled data to the DB
+    print('Exporting timetable data to database...')
+    Service_Connect.export_to_mongo(Database, 'Skoleni', Database_model)
+
+    # Export class list to database table
+    print('Exporting Class list to database...')
+    Service_Connect.export_to_mongo(Database, "Klases", ClassList[0])
+else:
+    # Exports class list to a classes.json file
+    Service_Connect.list_to_json(ClassList[0])
+
+    # Exports lesson data and class name to file.
+    Service_Connect.lessons_to_json(Current_Lessons[0], Current_Lessons[1])
 
 # Close browser cleanly, if selected
 Scraper.closeBrowser()

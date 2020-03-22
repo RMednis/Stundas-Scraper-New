@@ -6,7 +6,7 @@ apigenerate = True
 [BROWSER]
 browserheadless = True
 scrapeurl = https://ogrestehnikums.edupage.org/timetable/
-closeafter = False
+closeafter = True
 
 [SCRAPER]
 newviewer = False
@@ -20,3 +20,7 @@ database = CI-Database
 user = user
 password = pass
 
+[FILE]
+used = False
+path = ./Export/
+suffix = _data.json
