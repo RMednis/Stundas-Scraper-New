@@ -11,6 +11,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+
 import Config
 
 browser = 0
@@ -30,9 +31,9 @@ def startBrowser(url):
 
     # Sets which div will be checked to determine when the page has fully loaded depending on version
     if new_viewer:  # New viewer checked element
-        checked_element = (By.XPATH, "//div[contains(@class, 'print-nobreak')]/div")
+        checked_element = (By.XPATH, "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']")
     else:  # Old viewer checked element
-        checked_element = (By.XPATH, '//*[@id="ttonline_printpreview"]/div')
+        checked_element = (By.XPATH, '//*[@id="ttonline_printpreview"]/div//*[name()="svg"]')
 
     print('Launching browser...')
     browser = Firefox(options=opts)  # Launches the browser with options set above
