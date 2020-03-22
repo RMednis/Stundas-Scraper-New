@@ -16,7 +16,7 @@ timetable formats, but `Sorter.py` has hard coded values, that are only meant fo
 that no lesson is shorter than 45 minutes.
 - The exported data does not calculate or approximate breaks between 45 minute lessons. This should be done on the 
 front-end apps.
-- The scripts can both - export to a MongoDB database server, or generate a static JSON output file, this can be set
+- The scripts can both - export to a MongoDB database server, or generate static JSON output files, this can be set
 in the configuration file generated on first start.
 
 
@@ -28,6 +28,10 @@ Currently only Firefox is supported, but support for chromium shouldn't bee too 
 ### Prerequisites
 Your system needs to have Python 3.5 (or newer), [Firefox](https://www.mozilla.org/en-US/firefox/new/) and [Geckodriver](https://github.com/mozilla/geckodriver/releases) installed. 
 Geckodriver also needs to accessible in the system path on both Windows and Linux.
+
+We also support exporting timetables/class lists to [Mongodb](https://www.mongodb.com), the configuration for that can
+be found in the `config.ini` that gets generated on first start.  
+ 
 
 #### Ubuntu 19.04
 Install firefox: 
@@ -67,18 +71,18 @@ python3 Main.py
 In development...
 
 ## ToDo
-- [x] Single Timetable Scraping
-- [x] Lesson sorting by time/day
-- [ ] Multiple Timetable Scraping
-- [x] Database connection
-- [ ] Export data to database **(Partial)**
+- [x] Single Timetable Scraping.
+- [x] Lesson sorting by time/day.
+- [ ] Multiple Timetable Scraping.
+- [x] Database connection.
+- [x] Export data to database.
 - [X] Export data to JSON files.
-- [x] Handling of empty lessons
-- [ ] Handling of multiple lessons at once **(Partial)**
-- [x] Lesson time calculation
-- [ ] Export Group Listing
-- [ ] Support for teacher tables
-- [ ] Support for room tables
+- [x] Handling of empty lessons.
+- [ ] Handling of multiple lessons at once (Multi-Group) **(Partial)**
+- [x] Lesson time calculation.
+- [x] Export Group Listing
+- [ ] Support for teacher tables (Future)
+- [ ] Support for room tables (Future)
 - [x] Support for new timetable viewer
 
 ## Authors
