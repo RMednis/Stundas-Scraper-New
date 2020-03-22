@@ -109,9 +109,19 @@ def scrapeList():
     new_viewer = Config.Settings.Scraper.UseNewMethod
 
     if new_viewer:  # Use the XPATH for the new version viewer
-        path = "//*[@id='docbody']/div[4]/div[3]/ul/li/a"
+        path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
+        button_path = "//div[@id='fitheight']//div/span[@title='Classes']"
     else:  # Use the XPATH for the old version viewer
         path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
+        button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='Classes']"
+    print('Scraping teacher/room/class list!')
+
+    SelectorButton = browser.find_element(By.XPATH, button_path)
+
+    # Click on class selector
+    # Open selection list
+    SelectorButton.click()
+
     ListItems = browser.find_elements(By.XPATH, path)
     names = list()
 
@@ -122,7 +132,8 @@ def scrapeList():
 
         names.append(name)
 
-    return names
+    print(ListItems)
+    return names, ListItems
 
 
 def closeBrowser():

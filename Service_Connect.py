@@ -59,10 +59,10 @@ def export_to_mongo(database, collection_name, data):
     database.drop_collection(collection_name)  # Deletes previous db collection
     collection = database[collection_name]  # Gets the current collection from the DB
 
-    if type(data) is not list:
-        collection.insert_one(data)  # Insert db template
-    else:
+    if type(data) is list:
         collection.insert_many(data)
+    else:
+        collection.insert_one(data)
 
     print_db(collection)
     # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
