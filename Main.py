@@ -35,6 +35,7 @@ else:
 Scraper.startBrowser(Config.Settings.Browser.URL)
 
 # Scrape class list
+# [0] - Names only, [1] - Selenium Objects
 ClassList = Scraper.scrapeList()
 
 # Scrape classes
@@ -44,21 +45,27 @@ ClassList = Scraper.scrapeList()
 Scraped_Data = Scraper.scrapeStundas()
 
 # Sort scraped data
+# [0] - Timetable data object, [1] - Timetable Class name
 Current_Lessons = Sorter.DaySorter(Scraped_Data)
 
 # Depending on settings it will either export to database or json file
 if Config.Settings.Database.Enabled:
-    # Generates a DB data model from the returned data
+    # Generates a DB data model from the returned data and the class name
     Database_model = Service_Connect.make_data_model(Current_Lessons[0], Current_Lessons[1])
+
     # Pass the modeled data to the DB
+    print('Exporting timetable data to database...')
     Service_Connect.export_to_mongo(Database, 'Skoleni', Database_model)
 
+    # Export class list to database table
+    print('Exporting Class list to database...')
     Service_Connect.export_to_mongo(Database, "Klases", ClassList[0])
 else:
-    # Exports lesson data to file
-    Service_Connect.export_to_json(Current_Lessons)
+    # Exports class list to a classes.json file
+    Service_Connect.list_to_json(ClassList[0])
 
-print(Current_Lessons)
+    # Exports lesson data and class name to file.
+    Service_Connect.lessons_to_json(Current_Lessons[0], Current_Lessons[1])
 
 # Close browser cleanly, if selected
 Scraper.closeBrowser()

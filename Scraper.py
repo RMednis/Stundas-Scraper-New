@@ -11,10 +11,10 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-
 import Config
 
 browser = 0
+
 
 def startBrowser(url):
     global browser
@@ -65,9 +65,10 @@ def scrapeStundas():
         path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
         path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
 
-
     stundas = browser.find_elements_by_xpath(path)
     class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
+
+    # Returns both the class name and the list of table objects.
     return [stundas, class_name]
 
 
@@ -102,6 +103,7 @@ def scrapeClasses(url):
     else:
         print("Scraping failed with status code: " + response.status_code)
 """
+
 
 # Scrapes the list of people/classes/rooms from the page dropdown, so we know what
 def scrapeList():

@@ -7,6 +7,7 @@ import datetime
 import Config
 import json
 import os
+import shutil
 
 '''
 This script contains the functions necessary for generating and exporting a JSON API response to file, or 
@@ -75,20 +76,27 @@ File Export Functions
 
 
 # Function, that exports the JSON response to a file
-def export_to_json(data):
+def lessons_to_json(lesson_data, class_name):
     # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
-    file = open(Config.Settings.File.Path + data['class'] + Config.Settings.File.Suffix, 'w')
+    file = open(Config.Settings.File.Path + class_name + Config.Settings.File.Suffix, 'w')
 
     # Creates a template and saves it to a file
-    json.dump(make_data_model(data, data['class']), file, ensure_ascii=False, indent=4)
+    json.dump(make_data_model(lesson_data, class_name), file, ensure_ascii=False, indent=4)
 
+
+def list_to_json(list):
+    # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
+    file = open(Config.Settings.File.Path + 'classes.json', 'w')
+
+    # Creates a template and saves it to a file
+    json.dump(list, file, ensure_ascii=False, indent=4)
 
 def json_initialize():
     folder = Config.Settings.File.Path
 
     if os.path.isdir(folder):
         print("Removing old data directory!")
-        os.remove(folder)
+        shutil.rmtree(folder)
 
     try:
         print("Creating new directory in ", folder)
