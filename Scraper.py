@@ -2,18 +2,17 @@
 # Scraper
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
 
-import requests, json
-from lxml import html
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 
 import Config
 
-browser = 0
+browser = ""
 
 
 def startBrowser(url):
@@ -40,6 +39,7 @@ def startBrowser(url):
 
     print('Navigating to ', url)
     browser.get(url)  # Opens the url set above
+
 
     # Wait for the page to load or timeout!
     try:
@@ -72,70 +72,58 @@ def scrapeStundas():
     return [stundas, class_name]
 
 
-# TODO: Rewrite this!
-"""
-def scrapeClasses(url):
-    # Get document from link and make a html tree out of it
-    response = requests.get(url)
-    if response.status_code == 200:
-        page_tree = html.fromstring(response.content)
-
-        # Find all scripts and remove newline chars
-        scripts = str(page_tree.xpath('//script[@type="text/javascript"]/text()')).replace('\\n', '')
-
-        # Find the start/end of the required json file
-        start = scripts.find('{"table":"classes"')
-        end = scripts.find(',{"table":"subjects"')
-
-        # Make the json from scripts char array
-        found_json = json.loads(scripts[start:end].replace("\'", ""))
-
-        # Dict that will hold scraped info from found_json
-        output_json = {}
-
-        for row in found_json['rows']:
-            # Each class has link with its own id
-            output_json[str(row['name'])] = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=16&class=' + row[
-                'id']
-
-        # Outputs file to a json file
-        json.dump(output_json, open('classes.json', 'w'), indent=4, ensure_ascii=False)
-    else:
-        print("Scraping failed with status code: " + response.status_code)
-"""
-
-
-# Scrapes the list of people/classes/rooms from the page dropdown, so we know what
-def scrapeList():
+# Opens the list
+def openList():
     global browser
     new_viewer = Config.Settings.Scraper.UseNewMethod
 
     if new_viewer:  # Use the XPATH for the new version viewer
-        path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
         button_path = "//div[@id='fitheight']//div/span[@title='Classes']"
     else:  # Use the XPATH for the old version viewer
-        path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
         button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='Classes']"
-    print('Scraping teacher/room/class list!')
 
+    # Find the selector button in the document
     SelectorButton = browser.find_element(By.XPATH, button_path)
 
-    # Click on class selector
-    # Open selection list
+    # Click on the class selector button, to load in the required dropdown elements for scraping.
     SelectorButton.click()
 
-    ListItems = browser.find_elements(By.XPATH, path)
-    names = list()
+# Scrapes the list of people/classes/rooms from the page dropdown, so we know what
+def scrapeList():
+    global browser
 
+    path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
+
+    print('Scraping teacher/room/class list!')
+
+    openList()
+
+    ListItems = browser.find_elements(By.XPATH, path)  # The drop down html elements
+    names = list()  # List object to hold the dropdown text content
+
+    # Loop through the elements and get their text content
     for item in ListItems:
+        # Dict for storing the elements in a DB
         name = {
             "name": item.get_attribute('innerHTML')
         }
 
-        names.append(name)
+        names.append(name)  # Append it to the text content list
 
-    print(ListItems)
-    return names, ListItems
+    # Pass the text list for DB export, and the Browser element list for changing tables
+    return names
+
+
+def openTable(class_name):
+    global browser
+    openList()
+
+    current_class = browser.find_element(By.XPATH,
+                                         "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li//*[contains(text(), '{}')]".format(
+                                             class_name['name']))
+
+    browser.execute_script("arguments[0].scrollIntoView();", current_class)
+    current_class.click()
 
 
 def closeBrowser():
