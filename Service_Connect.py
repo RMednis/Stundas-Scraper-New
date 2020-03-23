@@ -89,7 +89,7 @@ def list_to_json(list):
     file = open(Config.Settings.File.Path + 'classes.json', 'w')
 
     # Creates a template and saves it to a file
-    json.dump(list, file, ensure_ascii=False, indent=4)
+    json.dump(list[1], file, ensure_ascii=False, indent=4)
 
 def json_initialize():
     folder = Config.Settings.File.Path

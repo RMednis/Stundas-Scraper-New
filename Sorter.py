@@ -1,7 +1,7 @@
 import json
 from selenium.webdriver.common.by import By
 
-def DaySorter(scraped_data):
+def DaySorter(scraped_data, class_list, teacher_list, room_list):
     pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
 
     # Stundas objekts
@@ -41,7 +41,7 @@ def DaySorter(scraped_data):
     }
 
     # Weird ypos gonna need a fix
-    weird_ypos_bottom = [573, 879, 1185, 1491]
+    multigroup_ypos_bottom = [573, 879, 1185, 1491, 1797]
     single_lesson_length = 256.5
     first_lecture_xpos = 345.0    # Needed to determine if first lectures columnar position really is 0
 
@@ -54,29 +54,41 @@ def DaySorter(scraped_data):
         xpos = element_top.get_attribute('x')  # The x position of the lesson block!
         length = element_top.get_attribute('width')  # The width of the lesson block, used to calculate the time!
         data = stunda.get_property('innerHTML').splitlines()  # The text... split by /n
-        if len(data) == 4:
-            if float(ypos) in weird_ypos_bottom:  # If theres no teacher field its probably full day
-                ypos = list(day_id)[weird_ypos_bottom.index(int(ypos))]
-            subject = data[0]
-            group = data[1]
-            teacher = data[2]
-            room = data[3]
-        elif len(data) != 3:
-            subject = data[0]
-            room = data[1]
-            teacher = ""
-            group = ""
-        else:
-            subject = data[0]
-            teacher = data[1]
-            room = data[2]
-            group = ""
+
+        # Multple group names, used for finding the group field.
+        groups = ["1.grupa", "2.grupa"]
+
+        # Defaults for the fields
+        teacher, room, group, subject = "", "", "", ""
+
+        # Matches the field content to the field type
+        for field in data:
+            # If the field is in the teacher list, it's a teacher field
+            if field in teacher_list[0]:
+                teacher = field
+
+            # If the field is in the room list, it's a room field
+            elif field in room_list[0]:
+                room = field
+
+            # If the field is in the group list, it's a group field
+            elif field in groups:
+                group = field
+
+            # If none of the above match, it's a subject field
+            else:
+                subject = field
+
+        # Used for multiple group day sorting, if the ypos is one of the bottom group elements
+        if float(ypos) in multigroup_ypos_bottom:
+            # Sets the ypos to the day it belongs in
+            ypos = list(day_id)[multigroup_ypos_bottom.index(int(ypos))]
 
         # Add subject object to list
         current_day = day_id[int(ypos)]  # Finds the current day based on the subjects y position
 
         lesson_length = (
-                    float(length) / single_lesson_length)  # Calculates how many 45 minute segments the lesson takes up!
+                float(length) / single_lesson_length)  # Calculates how many 45 minute segments the lesson takes up!
         lesson_count = 0  # Sets the counting veriable
 
         while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a list

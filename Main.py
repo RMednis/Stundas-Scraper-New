@@ -28,7 +28,13 @@ Config.FirstLaunch()
 Scraper.startBrowser(Config.Settings.Browser.URL)
 
 # Scrape class list
-ClassList = Scraper.scrapeList()
+ClassList = Scraper.scrapeList('Classes')
+
+# Scrape teacher list
+TeacherList = Scraper.scrapeList('Teachers')
+
+# Scrape classroom list
+RoomList = Scraper.scrapeList('Classrooms')
 
 # Initialization
 if Config.Settings.Database.Enabled:
@@ -37,7 +43,9 @@ if Config.Settings.Database.Enabled:
 
     # Export class list to database table
     print('Exporting Class list to database...')
-    Service_Connect.export_to_mongo(Database, "Klases", ClassList)
+    Service_Connect.export_to_mongo(Database, "Kursi", ClassList[1])
+    Service_Connect.export_to_mongo(Database, "Skolotaji", TeacherList[1])
+    Service_Connect.export_to_mongo(Database, "Telpas", RoomList[1])
 else:
     # Creates the directory structure required, deletes old data
     Service_Connect.json_initialize()
@@ -45,9 +53,9 @@ else:
     # Exports class list to a classes.json file
     Service_Connect.list_to_json(ClassList)
 
-for class_name in ClassList:
+for class_name in ClassList[0]:
 
-    print(' - - - Moving to {} - - - '.format(class_name['name']))
+    print(' - - - Moving to {} - - - '.format(class_name))
     # Open the table
     Scraper.openTable(class_name)
 
@@ -56,7 +64,7 @@ for class_name in ClassList:
 
     # Sort scraped data
     # [0] - Timetable data object, [1] - Timetable Class name
-    Current_Lessons = Sorter.DaySorter(Scraped_Data)
+    Current_Lessons = Sorter.DaySorter(Scraped_Data, ClassList, TeacherList, RoomList)
 
     # Depending on settings it will either export to database or json file
     if Config.Settings.Database.Enabled:

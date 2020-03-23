@@ -73,14 +73,15 @@ def scrapeStundas():
 
 
 # Opens the list
-def openList():
+def openList(list_name):
     global browser
     new_viewer = Config.Settings.Scraper.UseNewMethod
 
     if new_viewer:  # Use the XPATH for the new version viewer
-        button_path = "//div[@id='fitheight']//div/span[@title='Classes']"
+        button_path = "//div[@id='fitheight']//div/span[@title='{}']".format(list_name)
     else:  # Use the XPATH for the old version viewer
-        button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='Classes']"
+        button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='{}']".format(
+            list_name)
 
     # Find the selector button in the document
     SelectorButton = browser.find_element(By.XPATH, button_path)
@@ -89,38 +90,42 @@ def openList():
     SelectorButton.click()
 
 # Scrapes the list of people/classes/rooms from the page dropdown, so we know what
-def scrapeList():
+def scrapeList(list_name):
     global browser
 
     path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
 
     print('Scraping teacher/room/class list!')
 
-    openList()
+    openList(list_name)
 
     ListItems = browser.find_elements(By.XPATH, path)  # The drop down html elements
     names = list()  # List object to hold the dropdown text content
-
+    names_export = list()
     # Loop through the elements and get their text content
     for item in ListItems:
         # Dict for storing the elements in a DB
-        name = {
-            "name": item.get_attribute('innerHTML')
+        name = item.get_attribute('innerHTML')
+
+        name_export = {
+            "name": name
         }
 
         names.append(name)  # Append it to the text content list
 
-    # Pass the text list for DB export, and the Browser element list for changing tables
-    return names
+        names_export.append(name_export)  # Append to list to be exported to DB/File
+
+    # Pass the text list for DB export, and the name list for others
+    return names, names_export
 
 
 def openTable(class_name):
     global browser
-    openList()
+    openList('Classes')
 
     current_class = browser.find_element(By.XPATH,
                                          "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li//*[contains(text(), '{}')]".format(
-                                             class_name['name']))
+                                             class_name))
 
     browser.execute_script("arguments[0].scrollIntoView();", current_class)
     current_class.click()
