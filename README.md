@@ -73,25 +73,29 @@ In development...
 ## ToDo
 - [x] Single Timetable Scraping.
 - [x] Lesson sorting by time/day.
-- [ ] Multiple Timetable Scraping.
+- [x] Multiple Timetable Scraping.
 - [x] Database connection.
 - [x] Export data to database.
 - [X] Export data to JSON files.
 - [x] Handling of empty lessons.
-- [ ] Handling of multiple lessons at once (Multi-Group) **(Partial)**
+- [x] Handling of multiple lessons at once (Multi-Group)
 - [x] Lesson time calculation.
-- [x] Export Group Listing
+- [x] Export Group List
+- [x] Export Room List
+- [x] Export Teacher List
 - [ ] Support for teacher tables (Future)
 - [ ] Support for room tables (Future)
 - [x] Support for new timetable viewer
 
 ## Authors
 
-* **Reinis Gunārs Mednis** - *Initial Work, Scraping, Database Connections* - [RMednis](https://github.com/RMednis)
-* **Ikars Melnalksnis** - *Initial Work, Sorting, JSON Response creation* - [Lyx52](https://github.com/Lyx52)
+* **Reinis Gunārs Mednis** - *Initial Work, Scraping/Sorting, Database Connections, List exports* - [RMednis](https://github.com/RMednis)
+* **Ikars Melnalksnis** - *Initial Work, Scraping/Sorting, JSON Response creation, List exports* - [Lyx52](https://github.com/Lyx52)
 
 ## License
 
-*To Be Determined*
+Licensed under the MIT License, Copyright © Reinis Gunārs Mednis, Ikars Melnalksnis 2020
+
+For more information, check ``LICENSE.md``
 
 
