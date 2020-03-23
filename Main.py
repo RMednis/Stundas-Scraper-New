@@ -41,6 +41,12 @@ if Config.Settings.Database.Enabled:
     # Connects to the Database
     Database = Service_Connect.connect_to_mongo()
 
+    # Drop previous collections
+    Service_Connect.drop_collection(Database, "Tabulas_Skoleni")
+    Service_Connect.drop_collection(Database, "Kursi")
+    Service_Connect.drop_collection(Database, "Skolotaji")
+    Service_Connect.drop_collection(Database, "Telpas")
+
     # Export class list to database table
     print('Exporting Class list to database...')
     Service_Connect.export_to_mongo(Database, "Kursi", ClassList[1])
@@ -73,7 +79,7 @@ for class_name in ClassList[0]:
 
         # Pass the modeled data to the DB
         print('Exporting timetable data to database...')
-        Service_Connect.export_to_mongo(Database, 'Skoleni', Database_model)
+        Service_Connect.export_to_mongo(Database, 'Tabulas_Skoleni', Database_model)
     else:
         # Exports lesson data and class name to file.
         Service_Connect.lessons_to_json(Current_Lessons[0], Current_Lessons[1])

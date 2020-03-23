@@ -54,10 +54,13 @@ def connect_to_mongo():
     return database  # Returns database to caller function
 
 
-# Export the classes lessons to a
-def export_to_mongo(database, collection_name, data):
-    #
+# Drop collection
+def drop_collection(database, collection_name):
     database.drop_collection(collection_name)  # Deletes previous db collection
+
+
+# Export the data to a mongodb collection
+def export_to_mongo(database, collection_name, data):
     collection = database[collection_name]  # Gets the current collection from the DB
 
     if type(data) is list:
@@ -65,9 +68,6 @@ def export_to_mongo(database, collection_name, data):
     else:
         collection.insert_one(data)
 
-    print_db(collection)
-    # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
-    #  directly!
 
 
 '''
