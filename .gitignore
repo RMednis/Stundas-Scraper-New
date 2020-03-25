@@ -1,0 +1,9 @@
+# Python script generated files
+/output.json
+/geckodriver.log
+/config.ini
+/classes.json
+
+# .idea folder
+/.idea/
+/Export/

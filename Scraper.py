@@ -1,179 +1,141 @@
 # MedsNET Timetable Scraper
-# Scrapin ain't no big deal
-# Reinis 2020
+# Scraper
+# Reinis Gunārs Mednis / Ikars Melnalksnis 2020
 
-import simplejson as simplejson
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver import Firefox
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 
-# Enter the URL of the site
-# url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-114'
-url = 'https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80'  # Weird cell link
+import Config
 
-# Toggle if browser is headless or not
-headless_check = False
-
-print('MedsNET Timetable Scraper! - WIP')
-opts = Options()
-
-print('Headless: ', headless_check)
-print('URL:      ', url)
-opts.headless = headless_check
-
-print('Launching browser...')
-browser = Firefox(options=opts)
-
-print('Navigating to ', url)
-browser.get(url)
-
-try:
-    print('Waiting for page JS to load...')
-    WebDriverWait(browser, 6).until(EC.presence_of_element_located((By.ID, 'ttonline_printpreview')))
-    print('JS Loaded!')
-
-except TimeoutException:
-    print("Failed - Timeout loading main page!")
-    exit(100)
-
-print('Locating and parsing SVG elements!')
-
-stundas = browser.find_elements_by_xpath(
-    "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']")
-
-print('Sorting elements by day!')
-
-pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
+browser = ""
 
 
-# Stundas objekts
-class stunda_object:
-    def __init__(self, nosaukums, skolotajs, kabinets, x, y, group):
-        self.nosaukums = nosaukums
-        self.skolotajs = skolotajs
-        self.kabinets = kabinets
-        self.group = group
-        self.x = x
-        self.y = y
-        self.length = 0
+def startBrowser(url):
+    global browser
+    opts = Options()
+    headless_check = Config.Settings.Browser.Headless
+    new_viewer = Config.Settings.Scraper.UseNewMethod
 
-    def addLength(self, len):
-        if len == 0:
-            if self.group == "2.grupa":
-                self.length = 2.0  # TEMP FIX NEED TO LOOK INTO IT
-            else:
-                self.length = -1  # FULL DAY
-        elif len < 0 and abs(len) % 2 == 0:
-            self.length = 2.0  # Last hour of the day is 2 hours long
-        elif len < 0 and abs(len) % 2 != 0:
-            self.length = 1.0  # Last hour of the day is 1 hour long
-        else:
-            self.length = len  # Last hour of the day is length long
+    # Print current config to console for debugging
+    print('Headless: ', headless_check)
+    print('URL:      ', url)
+    print('New Viewer:', new_viewer)
+
+    opts.headless = headless_check  # Sets headless state based off the headless_check setting
+
+    # Sets which div will be checked to determine when the page has fully loaded depending on version
+    if new_viewer:  # New viewer checked element
+        checked_element = (By.XPATH, "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']")
+    else:  # Old viewer checked element
+        checked_element = (By.XPATH, '//*[@id="ttonline_printpreview"]/div//*[name()="svg"]')
+
+    print('Launching browser...')
+    browser = Firefox(options=opts)  # Launches the browser with options set above
+
+    print('Navigating to ', url)
+    browser.get(url)  # Opens the url set above
 
 
-day_id = {
-    420: pirmdiena,
-    726: otrdiena,
-    1032: tresdiena,
-    1338: ceturdiena,
-    1644: piekdiena
-}
+    # Wait for the page to load or timeout!
+    try:
+        print('Waiting for page JS to load...')
+        WebDriverWait(browser, 10).until(EC.presence_of_element_located(checked_element))  # Waits until element appears
+        print('JS Loaded!')
 
-day_name = {
-    420: "Pirmdiena",
-    726: "Otrdiena",
-    1032: "Tresdiena",
-    1338: "Ceturtdiena",
-    1644: "Piektdiena"
-}
-# Weird ypos gonna need a fix
-weird_ypos_bottom = [573, 879, 1185, 1491]
-one_hour_length = 256.5
+    except TimeoutException:  # The page took too long to load!
+        print("Failed - Timeout loading main page!")  # Error Message
+        closeBrowser()
+        exit(100)  # Exit Gracefully
 
-for stunda in stundas:
-    element_top = stunda.find_element(By.XPATH, './..')
-    ypos = element_top.get_attribute('y')
-    xpos = element_top.get_attribute('x')
-    length = element_top.get_attribute('width')
-    data = stunda.get_property('innerHTML').splitlines()
 
-    # TODO: FIX THIS: https://ogrestehnikums.edupage.org/timetable/view.php?num=12&class=-80 WEIRD HOURS
-    # TEMP FIX!
-    if len(data) == 4:
-        if float(ypos) in weird_ypos_bottom:   # If theres no teacher field its probably full day
-            ypos = list(day_id)[weird_ypos_bottom.index(int(ypos))]
+def scrapeStundas():
+    new_viewer = Config.Settings.Scraper.UseNewMethod  # Check if new viewer enabled in settings
 
-        subject = data[0]
-        group = data[1]
-        teacher = data[2]
-        room = data[3]
+    print('Locating and parsing SVG elements!')
+    # Check if the new/testing version of the timetable viewer is being used.
+    if new_viewer:  # Use the XPATH for the new version viewer
+        path = "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
+        path_class_name = "//div[contains(@class, 'print-nobreak')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
+    else:  # Use the XPATH for the old version viewer
+        path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
+        path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
 
-    elif len(data) != 3:
-        subject = data[0]
-        room = data[1]
-        teacher = ""
-        group = ""
+    stundas = browser.find_elements_by_xpath(path)
+    class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
+
+    # Returns both the class name and the list of table objects.
+    return [stundas, class_name]
+
+
+# Opens the list
+def openList(list_name):
+    global browser
+    new_viewer = Config.Settings.Scraper.UseNewMethod
+
+    if new_viewer:  # Use the XPATH for the new version viewer
+        button_path = "//div[@id='fitheight']//div/span[@title='{}']".format(list_name)
+    else:  # Use the XPATH for the old version viewer
+        button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='{}']".format(
+            list_name)
+
+    # Find the selector button in the document
+    SelectorButton = browser.find_element(By.XPATH, button_path)
+
+    # Click on the class selector button, to load in the required dropdown elements for scraping.
+    SelectorButton.click()
+
+# Scrapes the list of people/classes/rooms from the page dropdown, so we know what
+def scrapeList(list_name):
+    global browser
+
+    path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
+
+    print('Scraping teacher/room/class list!')
+
+    openList(list_name)
+
+    ListItems = browser.find_elements(By.XPATH, path)  # The drop down html elements
+    names = list()  # List object to hold the dropdown text content
+    names_export = list()
+    # Loop through the elements and get their text content
+    for item in ListItems:
+        # Dict for storing the elements in a DB
+        name = item.get_attribute('innerHTML')
+
+        name_export = {
+            "name": name
+        }
+
+        names.append(name)  # Append it to the text content list
+
+        names_export.append(name_export)  # Append to list to be exported to DB/File
+
+    # Pass the text list for DB export, and the name list for others
+    return names, names_export
+
+
+def openTable(class_name):
+    global browser
+    openList('Classes')
+
+    current_class = browser.find_element(By.XPATH,
+                                         "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li//*[contains(text(), '{}')]".format(
+                                             class_name))
+
+    browser.execute_script("arguments[0].scrollIntoView();", current_class)
+    current_class.click()
+
+
+def closeBrowser():
+    global browser
+
+    if Config.Settings.Browser.Close:
+        print('Closing browser!')
+        browser.quit()
     else:
-        subject = data[0]
-        room = data[1]
-        teacher = data[2]
-        group = ""
-
-    # Add subject object to list
-    day_id[int(ypos)].append(stunda_object(subject, teacher, room, xpos, ypos, group))
-
-# Iterates through each day and sorts items by their x coords
-for day in day_id:
-    day_id[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key
-
-    # Adds subject length
-    for item in day_id[day]:
-        # Adds length to previous item 3AM NO IDEA HOW THIS SH1T WORKS(-1 = Fullday; 1.0 = 1 hour; 2.0 = 2 hours)
-        day_id[day][day_id[day].index(item) - 1].addLength(
-            (float(item.x) - float(day_id[day][day_id[day].index(item) - 1].x)) / one_hour_length)
-
-json_data = '{"Server": {},"Dienas": {'
-
-
-# Function that returns json array element in string
-def pievienot_stundu(subject, teacher, room, length, group):
-    return '{"Prieksmets":"' + subject + '","Skolotajs":"' + teacher + '","Telpa":"' + room + '","Ilgums":"' + str(length) + '","Grupa":"' + group + '"}'
-
-
-# Index to keep track of each
-temp_index = 0
-for day in day_id:
-    # Add start of each subject array
-    json_data += '"' + day_name[day] + '": ['
-
-    # Iterate through subjects
-    for stunda in day_id[day]:
-
-        # Add to temp index(At the start so we dont have to subtract 1 from day_id array)
-        temp_index += 1
-
-        # Add each subject to current json string using pievienot_stundu function
-        json_data += pievienot_stundu(stunda.nosaukums, stunda.skolotajs, stunda.kabinets, stunda.length, stunda.group)
-
-        # If its not the last subject, then add a comma to seperate array elements
-        if len(day_id[day]) != temp_index:
-            json_data += ','
-
-    # Reset index
-    temp_index = 0
-
-    # If its not the last day add end of array
-    if day != 1644:
-        json_data += '],'
-
-    # Else add end of json file
-    else:
-        json_data += ']}}'
-
-# Output the file
-with open("output.json", "w") as output_file:
-    output_file.write(simplejson.dumps(simplejson.loads(json_data), indent=4))
-    output_file.close()
+        print('Keeping browser open for development!')

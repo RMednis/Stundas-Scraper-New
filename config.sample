@@ -1,0 +1,26 @@
+[STEPS]
+scraper = True
+sorter = True
+apigenerate = True
+
+[BROWSER]
+browserheadless = True
+scrapeurl = https://ogrestehnikums.edupage.org/timetable/
+closeafter = True
+
+[SCRAPER]
+newviewer = False
+scrapealltables = False
+
+[DATABASE]
+used = False
+ip = 127.0.0.1
+port = 27017
+database = CI-Database
+user = user
+password = pass
+
+[FILE]
+used = False
+path = ./Export/
+suffix = _data.json
