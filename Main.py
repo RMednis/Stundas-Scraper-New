@@ -43,15 +43,15 @@ if Config.Settings.Database.Enabled:
 
     # Drop previous collections
     Service_Connect.drop_collection(Database, "Tabulas_Skoleni")
-    Service_Connect.drop_collection(Database, "Kursi")
-    Service_Connect.drop_collection(Database, "Skolotaji")
-    Service_Connect.drop_collection(Database, "Telpas")
+    Service_Connect.drop_collection(Database, "Saraksti")
 
     # Export class list to database table
     print('Exporting Class list to database...')
-    Service_Connect.export_to_mongo(Database, "Kursi", ClassList[1])
-    Service_Connect.export_to_mongo(Database, "Skolotaji", TeacherList[1])
-    Service_Connect.export_to_mongo(Database, "Telpas", RoomList[1])
+
+    Service_Connect.list_export(RoomList[1], 'Telpas', Database)
+    Service_Connect.list_export(TeacherList[1], 'Skolotaji', Database)
+    Service_Connect.list_export(ClassList[1], 'Kursi', Database)
+
 else:
     # Creates the directory structure required, deletes old data
     Service_Connect.json_initialize()

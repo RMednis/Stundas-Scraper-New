@@ -28,6 +28,16 @@ def make_data_model(lesson_data, class_name):
     }
 
 
+def list_export(object_list, name, database):
+    data_list = {
+        "name": name,
+        "updated": str(datetime.datetime.now()),
+        "list": object_list
+    }
+
+    export_to_mongo(database, "Saraksti", data_list)
+
+
 # Function that prints current collection, mainly for debugging
 def print_db(collection):
     for x in collection.find():
@@ -37,6 +47,7 @@ def print_db(collection):
 '''
 Database Export Functions
 '''
+
 
 # Function, to connect to the MongoDB Database
 def connect_to_mongo():
@@ -69,7 +80,6 @@ def export_to_mongo(database, collection_name, data):
         collection.insert_one(data)
 
 
-
 '''
 File Export Functions
 '''
@@ -90,6 +100,7 @@ def list_to_json(list):
 
     # Creates a template and saves it to a file
     json.dump(list[1], file, ensure_ascii=False, indent=4)
+
 
 def json_initialize():
     folder = Config.Settings.File.Path
