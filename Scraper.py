@@ -1,5 +1,5 @@
 # MedsNET Timetable Scraper
-# Scraper
+# Main Scraper
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
 
 from selenium.common.exceptions import TimeoutException
@@ -8,14 +8,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
 
 import Config
 
 browser = ""
 
 
-def startBrowser(url):
+# Starts the browser
+def start_browser(url):
     global browser
     opts = Options()
     headless_check = Config.Settings.Browser.Headless
@@ -40,20 +40,20 @@ def startBrowser(url):
     print('Navigating to ', url)
     browser.get(url)  # Opens the url set above
 
-
     # Wait for the page to load or timeout!
     try:
         print('Waiting for page JS to load...')
         WebDriverWait(browser, 10).until(EC.presence_of_element_located(checked_element))  # Waits until element appears
-        print('JS Loaded!')
+        print('SVG and JS loaded!')
 
     except TimeoutException:  # The page took too long to load!
         print("Failed - Timeout loading main page!")  # Error Message
-        closeBrowser()
+        close_browser()  # Close the browser
         exit(100)  # Exit Gracefully
 
 
-def scrapeStundas():
+# Scrapes raw lesson objects from svg
+def scrape_stundas():
     new_viewer = Config.Settings.Scraper.UseNewMethod  # Check if new viewer enabled in settings
 
     print('Locating and parsing SVG elements!')
@@ -65,7 +65,10 @@ def scrapeStundas():
         path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
         path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
 
+    # Find all the lesson objects in the svg
     stundas = browser.find_elements_by_xpath(path)
+
+    # Find the class name in the svg
     class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
 
     # Returns both the class name and the list of table objects.
@@ -73,7 +76,7 @@ def scrapeStundas():
 
 
 # Opens the list
-def openList(list_name):
+def open_list(list_name):
     global browser
     new_viewer = Config.Settings.Scraper.UseNewMethod
 
@@ -89,15 +92,17 @@ def openList(list_name):
     # Click on the class selector button, to load in the required dropdown elements for scraping.
     SelectorButton.click()
 
+
 # Scrapes the list of people/classes/rooms from the page dropdown, so we know what
-def scrapeList(list_name):
+def scrape_list(list_name):
     global browser
 
+    # This XPATH works on both viewer types
     path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
 
     print('Scraping teacher/room/class list!')
 
-    openList(list_name)
+    open_list(list_name)
 
     ListItems = browser.find_elements(By.XPATH, path)  # The drop down html elements
     names = list()  # List object to hold the dropdown text content
@@ -107,6 +112,7 @@ def scrapeList(list_name):
         # Dict for storing the elements in a DB
         name = item.get_attribute('innerHTML')
 
+        # TODO: Make this into a simple array instead?
         name_export = {
             "name": name
         }
@@ -119,21 +125,29 @@ def scrapeList(list_name):
     return names, names_export
 
 
-def openTable(class_name):
+# Opens a table based off the class name
+def open_table(class_name):
     global browser
-    openList('Classes')
+    # Open the classes dropdown
+    open_list('Classes')
 
+    # Find the necessary class in the dropdown
     current_class = browser.find_element(By.XPATH,
                                          "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li//*[contains(text(), '{}')]".format(
                                              class_name))
 
+    # Scroll the necessary class into view, so we can click on it
     browser.execute_script("arguments[0].scrollIntoView();", current_class)
+
+    # Click on the selected class in the dropdown, to switch to it
     current_class.click()
 
 
-def closeBrowser():
+# Closes the browser
+def close_browser():
     global browser
 
+    # Check config to see, if it's necessary to close the browser or not.
     if Config.Settings.Browser.Close:
         print('Closing browser!')
         browser.quit()

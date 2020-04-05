@@ -1,9 +1,12 @@
-'''
+# MedsNET Timetable Scraper
+# Config support functions/classes
+# Reinis Gunārs Mednis / Ikars Melnalksnis 2020
+"""
 Configuration file creation
 
 Reads and creates the configuration data required for changing vars, selecting steps, etc.
 The default file is config.ini, it gets created when you first execute this script.
-'''
+"""
 import configparser
 
 global config
@@ -20,25 +23,21 @@ def FirstLaunch():
     config = configparser.ConfigParser()
 
     configPath = 'config.ini'
-    # Execution steps!
-    config['STEPS'] = {
-        'Scraper': 'True',
-        'Sorter': 'True',
-        'APIGenerate': 'True'
-    }
 
-    # Browser scraper settings
+    # Browser settings
     config['BROWSER'] = {
         'BrowserHeadless': 'True',
         'ScrapeURL': 'https://ogrestehnikums.edupage.org/timetable/',
         'CloseAfter': 'False'
     }
 
+    # Scraper settings
     config['SCRAPER'] = {
         'NewViewer': 'False',
         'ScrapeAllTables': 'False'
     }
 
+    # Database settings
     config['DATABASE'] = {
         'Used': 'False',
         'IP': 'localhost',
@@ -48,6 +47,7 @@ def FirstLaunch():
         'Password': 'P@ssW0rd!'
     }
 
+    # File export settings
     config['FILE'] = {
         'Used': 'False',
         'Path': './Export/',
@@ -62,6 +62,7 @@ def FirstLaunch():
             config.write(configfile)
         exit(1)
 
+    # Converts configuration settings into an easily accessible class
     class Settings:
         class Browser:
             Headless = config['BROWSER'].getboolean('BrowserHeadless')
