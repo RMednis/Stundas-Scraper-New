@@ -1,10 +1,15 @@
-import json
+# MedsNET Timetable Scraper
+# Main Sorting Function
+# Reinis Gunārs Mednis / Ikars Melnalksnis 2020
+
 from selenium.webdriver.common.by import By
 
-def DaySorter(scraped_data, class_list, teacher_list, room_list):
+
+def day_sorter(scraped_data, class_list, teacher_list, room_list):
+    # Initialize the list objects
     pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
 
-    # Stundas objekts
+    # Main lesson class/object structure
     class stunda_object:
         def __init__(self, nosaukums, skolotajs, kabinets, x, y, group):
             self.nosaukums = nosaukums  # Subject name
@@ -16,14 +21,16 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
             self.index = 0  # Index to determine lectures columnar position
 
         def get_dict(self):
-            # Can be used to get the necessary information
+            # Returns data in a simple dict format
             return {
-                        'nosaukums': self.nosaukums,
-                        'skolotajs': self.skolotajs,
-                        'kabinets': self.kabinets,
-                        'group': self.group,
-                        'index': self.index
-                   }
+                'nosaukums': self.nosaukums,
+                'skolotajs': self.skolotajs,
+                'kabinets': self.kabinets,
+                'group': self.group,
+                'index': self.index
+            }
+
+    # Main week object, holds all day lists
     week = {
         "Pirmdiena": pirmdiena,
         "Otrdiena": otrdiena,
@@ -32,6 +39,7 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
         "Piektdiena": piekdiena
     }
 
+    # Used for sorting lessons into days based off their ypos values
     day_id = {
         420: pirmdiena,
         726: otrdiena,
@@ -40,13 +48,17 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
         1644: piekdiena
     }
 
-    # Weird ypos gonna need a fix
+    # Ypos values for multi-group lesson bottom elements
     multigroup_ypos_bottom = [573, 879, 1185, 1491, 1797]
+
+    # Length of a single lesson segment (Used for dividing them into standard size chunks)
     single_lesson_length = 256.5
-    first_lecture_xpos = 345.0    # Needed to determine if first lectures columnar position really is 0
+
+    first_lecture_xpos = 345.0  # Needed to determine if first lectures columnar position really is 0
 
     class_name = scraped_data[1][0]
-    print('Pulling lessons to objects!')
+
+    print('Converting raw data to lesson objects...')
     for stunda in scraped_data[0]:
         element_top = stunda.find_element(By.XPATH, './..')  # Gets the entire lesson block, not just the text!
 
@@ -79,6 +91,7 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
             else:
                 subject = field
 
+        # Normalize y coordinates
         # Used for multiple group day sorting, if the ypos is one of the bottom group elements
         if float(ypos) in multigroup_ypos_bottom:
             # Sets the ypos to the day it belongs in
@@ -89,7 +102,7 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
 
         lesson_length = (
                 float(length) / single_lesson_length)  # Calculates how many 45 minute segments the lesson takes up!
-        lesson_count = 0  # Sets the counting veriable
+        lesson_count = 0  # Sets the counting variable
 
         while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a list
             # If its second half of the lesson add single lesson length
@@ -99,7 +112,8 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
                 stunda_object(subject, teacher, room, lesson_xpos, ypos, group))  # Appends the subject to the day
             lesson_count += 1  # Appends 1 to the loop/lesson counter
 
-    print('Sorting lessons by day')
+    print('Sorting lessons by day...')
+
     # Iterates through each day and sorts items by their x coords
     for day in week:
         week[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
@@ -115,8 +129,7 @@ def DaySorter(scraped_data, class_list, teacher_list, room_list):
 
                 # Calculating how many lectures are in between last and current lecture + last lecture index
                 lecture.index = ((lecture.x - last_lecture.x) / single_lesson_length) + last_lecture.index
-    print('Creating JSON objects/string!')
 
-    print('Outputting data!')
+    print('Sorting complete!')
 
     return week, class_name

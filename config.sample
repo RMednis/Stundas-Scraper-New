@@ -1,8 +1,3 @@
-[STEPS]
-scraper = True
-sorter = True
-apigenerate = True
-
 [BROWSER]
 browserheadless = True
 scrapeurl = https://ogrestehnikums.edupage.org/timetable/
@@ -21,6 +16,6 @@ user = user
 password = pass
 
 [FILE]
-used = False
+used = True
 path = ./Export/
 suffix = _data.json
