@@ -33,8 +33,7 @@ def FirstLaunch():
 
     # Scraper settings
     config['SCRAPER'] = {
-        'NewViewer': 'False',
-        'ScrapeAllTables': 'False'
+        'NewViewer': 'False'
     }
 
     # Database settings
@@ -71,7 +70,6 @@ def FirstLaunch():
 
         class Scraper:
             UseNewMethod = config['SCRAPER'].getboolean('NewViewer')
-            Scrape_All = config['SCRAPER'].getboolean('ScrapeAllTables')
 
         class Database:
             Enabled = config['DATABASE'].getboolean('Used')
