@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 import Config
 
-browser = ""
+browser = Firefox
 
 
 # Starts the browser
@@ -111,18 +111,12 @@ def scrape_list(list_name):
     for item in ListItems:
         # Dict for storing the elements in a DB
         name = item.get_attribute('innerHTML')
-
-        # TODO: Make this into a simple array instead?
-        name_export = {
-            "name": name
-        }
-
         names.append(name)  # Append it to the text content list
 
-        names_export.append(name_export)  # Append to list to be exported to DB/File
+
 
     # Pass the text list for DB export, and the name list for others
-    return names, names_export
+    return names
 
 
 # Opens a table based off the class name

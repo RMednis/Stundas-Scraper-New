@@ -7,7 +7,7 @@ import Service_Connect
 import Sorter
 
 print('----------------------------------------------------')
-print('Timetable Scraping, Sorting and API creation script!')
+print('Timetable Scraping, Sorting and Exporting scripts!')
 print('   Reinis Gunārs Mednis, Ikars Melnalksnis - 2020')
 print('----------------------------------------------------')
 
@@ -45,9 +45,9 @@ if Config.Settings.Database.Enabled:
     # Export class list to database table
     print('Exporting Class list to database...')
 
-    Service_Connect.list_export(RoomList[1], 'Telpas', Database)
-    Service_Connect.list_export(TeacherList[1], 'Skolotaji', Database)
-    Service_Connect.list_export(ClassList[1], 'Kursi', Database)
+    Service_Connect.list_export(RoomList, 'Telpas', Database)
+    Service_Connect.list_export(TeacherList, 'Skolotaji', Database)
+    Service_Connect.list_export(ClassList, 'Kursi', Database)
 
 if Config.Settings.File.Enabled:
     # Creates the directory structure required, deletes old data
@@ -60,7 +60,7 @@ if Config.Settings.File.Enabled:
 Lesson scraping / Exporting
 """
 
-for class_name in ClassList[0]:
+for class_name in ClassList:
 
     print(' - - - Scraping {} lessons - - - '.format(class_name))
     # Open the table

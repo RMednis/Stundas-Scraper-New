@@ -67,7 +67,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         length = element_top.get_attribute('width')  # The width of the lesson block, used to calculate the time!
         data = stunda.get_property('innerHTML').splitlines()  # The text... split by /n
 
-        # Multple group names, used for finding the group field.
+        # Multiple group names, used for finding the group field.
         groups = ["1.grupa", "2.grupa"]
 
         # Defaults for the fields
@@ -76,11 +76,11 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         # Matches the field content to the field type
         for field in data:
             # If the field is in the teacher list, it's a teacher field
-            if field in teacher_list[0]:
+            if field in teacher_list:
                 teacher = field
 
             # If the field is in the room list, it's a room field
-            elif field in room_list[0]:
+            elif field in room_list:
                 room = field
 
             # If the field is in the group list, it's a group field
@@ -118,17 +118,17 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
     for day in week:
         week[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
 
-        for lecture in week[day]:
-            # First lecture of the day
-            if week[day].index(lecture) == 0:
+        for lesson in week[day]:
+            # First lesson of the day
+            if week[day].index(lesson) == 0:
                 # Sets the actual index/columnar position in table
-                lecture.index = (float(lecture.x) - float(first_lecture_xpos)) / single_lesson_length
+                lesson.index = (float(lesson.x) - float(first_lecture_xpos)) / single_lesson_length
             else:
-                # Last lecture object
-                last_lecture = week[day][week[day].index(lecture) - 1]
+                # Last lesson object
+                last_lesson = week[day][week[day].index(lesson) - 1]
 
-                # Calculating how many lectures are in between last and current lecture + last lecture index
-                lecture.index = ((lecture.x - last_lecture.x) / single_lesson_length) + last_lecture.index
+                # Calculating how many lectures are in between last and current lesson + last lesson index
+                lesson.index = ((lesson.x - last_lesson.x) / single_lesson_length) + last_lesson.index
 
     print('Sorting complete!')
 
