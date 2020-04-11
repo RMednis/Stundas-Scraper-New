@@ -24,7 +24,7 @@ Utility functions
 # Function that makes a data model from sorter data object
 def make_data_model(lesson_data, class_name):
     return {
-        "class": class_name,  # Returns the class name
+        "name": class_name,  # Returns the class/room/teacher name
         "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
         "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
     }

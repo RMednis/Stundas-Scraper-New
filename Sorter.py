@@ -60,6 +60,9 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
 
     class_name = scraped_data[1][0]
 
+    if "Teacher " in class_name:  # If the field contains the text 'Teacher'
+        class_name = class_name.split("Teacher ")[1]  # Use only the Name (ignoring the Teacher part)
+
     print('Converting raw data to lesson objects...')
     for stunda in scraped_data[0]:
         element_top = stunda.find_element(By.XPATH, './..')  # Gets the entire lesson block, not just the text!
@@ -77,6 +80,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
 
         # Matches the field content to the field type
         for field in data:
+
             # If the field is in the teacher dropdown_list, it's a teacher field
             if field in class_list:
                 students = field
