@@ -69,7 +69,8 @@ Lesson scraping / Exporting function
 def export_all_tables(name, name_list, collection):
     print('- - - Scraping {} tables! - - - '.format(name))
 
-    Service_Connect.drop_collection(Database, collection)
+    if Settings.Database.Enabled:
+        Service_Connect.drop_collection(Database, collection)
 
     for table_name in name_list:
 
