@@ -1,20 +1,19 @@
 # Stundas Scraper
 
 Scrapes lesson data and times from the [OVT Edupage](https://ogrestehnikums.edupage.org) based timetables, exports this 
-to a MongoDB server.
+to a MongoDB server or static JSON.
 
 ## About
 Stundas Scraper is a web scraper, that automatically pulls data from OVT's Edupage based time tables, sorts them, and
 converts them into easily usable objects, that are used for a multitude of tasks.  
 
-This project is based with the specific formatting of the OVT timetables in mind. `Scraper.py` should work with most 
-timetable formats, but `Sorter.py` has hard coded values, that are only meant for OVT's specific timetable formatting.
+This project, although initially meant for OVT timetables, should technically work for other timetable types without too
+many issues. The main issues might be in `Sorter.py`, since it contains hard coded values for object positions.
 
 #### Some additional points:
 
-- All lessons are split into 45 minute segments. This is done to make all lessons standard, this also counts on the fact
-that no lesson is shorter than 45 minutes.
-- The exported data does not calculate or approximate breaks between 45 minute lessons. This should be done on the 
+- All lessons are split into segments. In the case of OVT these segments are 45 minutes long. 
+- The exported data does not calculate or approximate breaks between lesson segments. This should be done on the 
 front-end apps.
 - The scripts can both - export to a MongoDB database server, or generate static JSON output files, this can be set
 in the configuration file generated on first start.
@@ -22,18 +21,21 @@ in the configuration file generated on first start.
 
 ## Getting Started
 
-This project is based on Python 3.7, and uses the Selenium browser automation suite for scraping.
-Currently only Firefox is supported, but support for chromium shouldn't bee too hard to do.
+This project is built on Python 3.7, and uses the Selenium browser automation suite for scraping.
+
+Currently only Firefox is supported, chromium support should be possible, but is currently not a priority.
+
+Python versions from 3.5 to 3.8 are fully supported.
 
 ### Prerequisites
 Your system needs to have Python 3.5 (or newer), [Firefox](https://www.mozilla.org/en-US/firefox/new/) and [Geckodriver](https://github.com/mozilla/geckodriver/releases) installed. 
 Geckodriver also needs to accessible in the system path on both Windows and Linux.
 
-We also support exporting timetables/class lists to [Mongodb](https://www.mongodb.com), the configuration for that can
+We support exporting timetables/class lists to [Mongodb](https://www.mongodb.com) or static JSON, the configuration for that can
 be found in the `config.ini` that gets generated on first start.  
  
 
-#### Ubuntu 19.04
+#### Ubuntu 19.04 / 19.10
 Install firefox: 
 ```
 sudo apt install firefox 
@@ -62,10 +64,14 @@ Install the required packages from `requirements.txt`
 ```
 pip3 install -r requirements.txt
 ```
-Run *Main.py* to generate a default configuration file  
+Run `Main.py` to generate a default `config.ini` file, or rename the existing `config.sample` to `config.ini`  
 ```
 python3 Main.py
 ```
+
+Edit the settings in `config.ini` to match your needs. (At least the *scrape_url* section)
+
+Run `Main.py` to scrape tables.
 #### Docker
 
 In development...
@@ -78,14 +84,14 @@ In development...
 - [x] Export data to database.
 - [X] Export data to JSON files.
 - [x] Handling of empty lessons.
-- [x] Handling of multiple lessons at once (Multi-Group)
+- [x] Handling of multiple lessons at once (Multi-Group).
 - [x] Lesson time calculation.
-- [x] Export Group List
-- [x] Export Room List
-- [x] Export Teacher List
-- [ ] Support for teacher tables (Future)
-- [ ] Support for room tables (Future)
-- [x] Support for new timetable viewer
+- [x] Export Group List.
+- [x] Export Room List.
+- [x] Export Teacher List.
+- [x] Support for teacher tables.
+- [x] Support for room tables.
+- [x] Support for new timetable viewer.
 
 ## Authors
 

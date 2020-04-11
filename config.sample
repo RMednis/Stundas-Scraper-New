@@ -1,11 +1,19 @@
+[STAGES]
+students = True
+teachers = True
+classrooms = True
+
 [BROWSER]
-browserheadless = True
-scrapeurl = https://ogrestehnikums.edupage.org/timetable/
-closeafter = True
+browser_headless = True
+scrape_url = https://ogrestehnikums.edupage.org/timetable/
+close_after = True
 
 [SCRAPER]
-newviewer = False
-scrapealltables = False
+new_viewer = False
+list_name = Saraksti
+student_name = Studenti
+teacher_name = Skolotaji
+room_name = Telpas
 
 [DATABASE]
 used = False
@@ -14,8 +22,10 @@ port = 27017
 database = CI-Database
 user = user
 password = pass
+table_collection_prefix = Tabulas_
 
 [FILE]
 used = True
 path = ./Export/
 suffix = _data.json
+

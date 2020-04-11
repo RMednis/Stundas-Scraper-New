@@ -6,15 +6,16 @@ from selenium.webdriver.common.by import By
 
 
 def day_sorter(scraped_data, class_list, teacher_list, room_list):
-    # Initialize the list objects
+    # Initialize the dropdown_list objects
     pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
 
     # Main lesson class/object structure
     class stunda_object:
-        def __init__(self, nosaukums, skolotajs, kabinets, x, y, group):
+        def __init__(self, nosaukums, skolotajs, kabinets, klase, x, y, group):
             self.nosaukums = nosaukums  # Subject name
             self.skolotajs = skolotajs  # Subject Teacher
             self.kabinets = kabinets  # Subject Room
+            self.klase = klase
             self.group = group  # Group (if multiple subjects are for different subgroups)
             self.x = x  # Object X coordinate
             self.y = y  # Object Y coordinate
@@ -26,6 +27,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
                 'nosaukums': self.nosaukums,
                 'skolotajs': self.skolotajs,
                 'kabinets': self.kabinets,
+                'klase': self.klase,
                 'group': self.group,
                 'index': self.index
             }
@@ -71,19 +73,22 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         groups = ["1.grupa", "2.grupa"]
 
         # Defaults for the fields
-        teacher, room, group, subject = "", "", "", ""
+        teacher, room, group, subject, students = "", "", "", "", ""
 
         # Matches the field content to the field type
         for field in data:
-            # If the field is in the teacher list, it's a teacher field
-            if field in teacher_list:
+            # If the field is in the teacher dropdown_list, it's a teacher field
+            if field in class_list:
+                students = field
+
+            elif field in teacher_list:
                 teacher = field
 
-            # If the field is in the room list, it's a room field
+            # If the field is in the room dropdown_list, it's a room field
             elif field in room_list:
                 room = field
 
-            # If the field is in the group list, it's a group field
+            # If the field is in the group dropdown_list, it's a group field
             elif field in groups:
                 group = field
 
@@ -97,19 +102,20 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
             # Sets the ypos to the day it belongs in
             ypos = list(day_id)[multigroup_ypos_bottom.index(int(ypos))]
 
-        # Add subject object to list
+        # Add subject object to dropdown_list
         current_day = day_id[int(ypos)]  # Finds the current day based on the subjects y position
 
         lesson_length = (
                 float(length) / single_lesson_length)  # Calculates how many 45 minute segments the lesson takes up!
         lesson_count = 0  # Sets the counting variable
 
-        while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a list
+        while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a dropdown_list
             # If its second half of the lesson add single lesson length
             lesson_xpos = float(xpos) + lesson_count * single_lesson_length
 
             current_day.append(
-                stunda_object(subject, teacher, room, lesson_xpos, ypos, group))  # Appends the subject to the day
+                stunda_object(subject, teacher, room, students, lesson_xpos, ypos,
+                              group))  # Appends the subject to the day
             lesson_count += 1  # Appends 1 to the loop/lesson counter
 
     print('Sorting lessons by day...')

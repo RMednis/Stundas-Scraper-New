@@ -24,16 +24,27 @@ def FirstLaunch():
 
     configPath = 'config.ini'
 
+    # Stages
+    config['STAGES'] = {
+        'Students': 'True',
+        'Teachers': 'True',
+        'Classrooms': 'True'
+    }
+
     # Browser settings
     config['BROWSER'] = {
-        'BrowserHeadless': 'True',
-        'ScrapeURL': 'https://ogrestehnikums.edupage.org/timetable/',
-        'CloseAfter': 'False'
+        'Browser_Headless': 'True',
+        'Scrape_URL': 'https://ogrestehnikums.edupage.org/timetable/',
+        'Close_After': 'True'
     }
 
     # Scraper settings
     config['SCRAPER'] = {
-        'NewViewer': 'False'
+        'New_Viewer': 'False',
+        'List_Name': 'Saraksti',
+        'Student_Name': 'Studenti',
+        'Teacher_Name': 'Skolotaji',
+        'Room_Name': 'Telpas'
     }
 
     # Database settings
@@ -43,7 +54,8 @@ def FirstLaunch():
         'Port': '27017',
         'Database': 'Stundas',
         'User': 'User',
-        'Password': 'P@ssW0rd!'
+        'Password': 'P@ssW0rd!',
+        'Table_Collection_Prefix': 'Tabulas_'
     }
 
     # File export settings
@@ -63,13 +75,22 @@ def FirstLaunch():
 
     # Converts configuration settings into an easily accessible class
     class Settings:
+        class Stages:
+            Students = config['STAGES'].getboolean('Students')
+            Teachers = config['STAGES'].getboolean('Teachers')
+            Classrooms = config['STAGES'].getboolean('Classrooms')
+
         class Browser:
-            Headless = config['BROWSER'].getboolean('BrowserHeadless')
-            URL = config['BROWSER']['ScrapeURL']
-            Close = config['BROWSER'].getboolean('CloseAfter')
+            Headless = config['BROWSER'].getboolean('Browser_Headless')
+            URL = config['BROWSER']['Scrape_URL']
+            Close = config['BROWSER'].getboolean('Close_After')
 
         class Scraper:
-            UseNewMethod = config['SCRAPER'].getboolean('NewViewer')
+            Use_New_Method = config['SCRAPER'].getboolean('New_Viewer')
+            Student_Table_Name = config['SCRAPER']['Student_Name']
+            Teacher_Table_Name = config['SCRAPER']['Teacher_Name']
+            Room_Table_Name = config['SCRAPER']['Room_Name']
+            List_Name = config['SCRAPER']['List_Name']
 
         class Database:
             Enabled = config['DATABASE'].getboolean('Used')
@@ -78,6 +99,7 @@ def FirstLaunch():
             Database = config['DATABASE']['DATABASE']
             User = config['DATABASE']['User']
             Pass = config['DATABASE']['Password']
+            Table_Prefix = config['DATABASE']['Table_Collection_Prefix']
 
         class File:
             Path = config['FILE']['Path']

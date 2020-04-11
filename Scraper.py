@@ -19,7 +19,7 @@ def start_browser(url):
     global browser
     opts = Options()
     headless_check = Config.Settings.Browser.Headless
-    new_viewer = Config.Settings.Scraper.UseNewMethod
+    new_viewer = Config.Settings.Scraper.Use_New_Method
 
     # Print current config to console for debugging
     print('Headless: ', headless_check)
@@ -54,7 +54,7 @@ def start_browser(url):
 
 # Scrapes raw lesson objects from svg
 def scrape_stundas():
-    new_viewer = Config.Settings.Scraper.UseNewMethod  # Check if new viewer enabled in settings
+    new_viewer = Config.Settings.Scraper.Use_New_Method  # Check if new viewer enabled in settings
 
     print('Locating and parsing SVG elements!')
     # Check if the new/testing version of the timetable viewer is being used.
@@ -71,14 +71,14 @@ def scrape_stundas():
     # Find the class name in the svg
     class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
 
-    # Returns both the class name and the list of table objects.
+    # Returns both the class name and the dropdown_list of table objects.
     return [stundas, class_name]
 
 
-# Opens the list
+# Opens the dropdown_list
 def open_list(list_name):
     global browser
-    new_viewer = Config.Settings.Scraper.UseNewMethod
+    new_viewer = Config.Settings.Scraper.Use_New_Method
 
     if new_viewer:  # Use the XPATH for the new version viewer
         button_path = "//div[@id='fitheight']//div/span[@title='{}']".format(list_name)
@@ -87,43 +87,39 @@ def open_list(list_name):
             list_name)
 
     # Find the selector button in the document
-    SelectorButton = browser.find_element(By.XPATH, button_path)
+    selector_button = browser.find_element(By.XPATH, button_path)
 
     # Click on the class selector button, to load in the required dropdown elements for scraping.
-    SelectorButton.click()
+    selector_button.click()
 
 
-# Scrapes the list of people/classes/rooms from the page dropdown, so we know what
+# Scrapes the dropdown_list of people/classes/rooms from the page dropdown, so we know what
 def scrape_list(list_name):
     global browser
 
     # This XPATH works on both viewer types
     path = "//div[contains(@class, 'asc dropDown')]//ul[contains(@class, 'dropDownPanel asc-context-menu')]/li/a"
 
-    print('Scraping teacher/room/class list!')
+    print('Scraping {} dropdown list!'.format(list_name))
 
     open_list(list_name)
 
-    ListItems = browser.find_elements(By.XPATH, path)  # The drop down html elements
+    list_items = browser.find_elements(By.XPATH, path)  # The drop down html elements
     names = list()  # List object to hold the dropdown text content
-    names_export = list()
+
     # Loop through the elements and get their text content
-    for item in ListItems:
-        # Dict for storing the elements in a DB
-        name = item.get_attribute('innerHTML')
-        names.append(name)  # Append it to the text content list
+    for item in list_items:
+        name = item.get_attribute('innerHTML')  # Get list name text
+        names.append(name)  # Append it to the text content dropdown_list
 
-
-
-    # Pass the text list for DB export, and the name list for others
     return names
 
 
 # Opens a table based off the class name
-def open_table(class_name):
+def open_table(list_name, class_name):
     global browser
     # Open the classes dropdown
-    open_list('Classes')
+    open_list(list_name)
 
     # Find the necessary class in the dropdown
     current_class = browser.find_element(By.XPATH,

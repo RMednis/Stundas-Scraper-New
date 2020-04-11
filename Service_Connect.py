@@ -2,12 +2,14 @@
 # API Generator / DB Connector
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
 
-from pymongo import MongoClient
 import datetime
-import Config
 import json
 import os
 import shutil
+
+from pymongo import MongoClient
+
+import Config
 
 '''
 This script contains the functions necessary for generating and exporting a JSON API response to file, or 
@@ -22,7 +24,7 @@ Utility functions
 # Function that makes a data model from sorter data object
 def make_data_model(lesson_data, class_name):
     return {
-        "class": class_name,
+        "class": class_name,  # Returns the class name
         "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
         "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
     }
@@ -32,7 +34,7 @@ def list_export(object_list, name, database):
     data_list = {
         "name": name,
         "updated": str(datetime.datetime.now()),
-        "list": object_list
+        "dropdown_list": object_list
     }
 
     export_to_mongo(database, "Saraksti", data_list)
@@ -94,12 +96,12 @@ def lessons_to_json(lesson_data, class_name):
     json.dump(make_data_model(lesson_data, class_name), file, ensure_ascii=False, indent=4)
 
 
-def list_to_json(list):
+def list_to_json(dropdown_list, name):
     # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
-    file = open(Config.Settings.File.Path + 'classes.json', 'w')
+    file = open(Config.Settings.File.Path + name + '.json', 'w')
 
     # Creates a template and saves it to a file
-    json.dump(list[1], file, ensure_ascii=False, indent=4)
+    json.dump(dropdown_list, file, ensure_ascii=False, indent=4)
 
 
 def json_initialize():
