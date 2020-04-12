@@ -1,3 +1,6 @@
+; Sample Configuration File
+; Also used as the config for CI tests
+
 [STAGES]
 students = True
 teachers = True
