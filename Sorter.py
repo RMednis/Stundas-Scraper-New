@@ -6,6 +6,18 @@ from selenium.webdriver.common.by import By
 
 
 def day_sorter(scraped_data, class_list, teacher_list, room_list):
+    """
+    :param scraped_data: Scraped page object
+    :param class_list: Classroom dropdown list
+    :param teacher_list: Teacher dropdown list
+    :param room_list: Room dropdown list
+    :return: [0] - Sorted week dict,
+    [1] - The name of the scraped class/room/teacher
+    """
+
+    """
+    Initialize objects 
+    """
     # Initialize the dropdown_list objects
     pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
 
@@ -41,6 +53,9 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         "Piektdiena": piekdiena
     }
 
+    """
+    Changeable variables
+    """
     # Used for sorting lessons into days based off their ypos values
     day_id = {
         420: pirmdiena,
@@ -58,13 +73,30 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
 
     first_lecture_xpos = 345.0  # Needed to determine if first lectures columnar position really is 0
 
+    """
+    Scraping the class name
+    """
     class_name = scraped_data[1][0]
 
     if "Teacher " in class_name:  # If the field contains the text 'Teacher'
         class_name = class_name.split("Teacher ")[1]  # Use only the Name (ignoring the Teacher part)
 
     print('Converting raw data to lesson objects...')
+
     for stunda in scraped_data[0]:
+
+        """
+        Initialize variables
+        """
+        # Multiple group names, used for finding the group field.
+        groups = ["1.grupa", "2.grupa"]
+
+        # Defaults for the fields
+        teacher, room, group, subject, students = "", "", "", "", ""
+
+        """
+        Scrape data from table
+        """
         element_top = stunda.find_element(By.XPATH, './..')  # Gets the entire lesson block, not just the text!
 
         ypos = element_top.get_attribute('y')  # The y position of the lesson block!
@@ -72,12 +104,9 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         length = element_top.get_attribute('width')  # The width of the lesson block, used to calculate the time!
         data = stunda.get_property('innerHTML').splitlines()  # The text... split by /n
 
-        # Multiple group names, used for finding the group field.
-        groups = ["1.grupa", "2.grupa"]
-
-        # Defaults for the fields
-        teacher, room, group, subject, students = "", "", "", "", ""
-
+        """
+        Sort text into appropriate fields
+        """
         # Matches the field content to the field type
         for field in data:
 
@@ -100,17 +129,21 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
             else:
                 subject = field
 
-        # Normalize y coordinates
+        """
+        Normalize y coordinates
+        """
         # Used for multiple group day sorting, if the ypos is one of the bottom group elements
         if float(ypos) in multigroup_ypos_bottom:
             # Sets the ypos to the day it belongs in
             ypos = list(day_id)[multigroup_ypos_bottom.index(int(ypos))]
 
-        # Add subject object to dropdown_list
+        """
+        Sort lesson into appropriate day, split into lesson segments
+        """
         current_day = day_id[int(ypos)]  # Finds the current day based on the subjects y position
 
         lesson_length = (
-                float(length) / single_lesson_length)  # Calculates how many 45 minute segments the lesson takes up!
+                float(length) / single_lesson_length)  # Calculates how many lesson segments the lesson takes up!
         lesson_count = 0  # Sets the counting variable
 
         while lesson_count < lesson_length:  # Appends those 45 minute lesson segments to a dropdown_list
@@ -122,9 +155,9 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
                               group))  # Appends the subject to the day
             lesson_count += 1  # Appends 1 to the loop/lesson counter
 
-    print('Sorting lessons by day...')
-
-    # Iterates through each day and sorts items by their x coords
+    """
+    Sort lessons in days by their x coordinates
+    """
     for day in week:
         week[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
 

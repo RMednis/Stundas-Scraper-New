@@ -14,8 +14,13 @@ import Config
 browser = Firefox
 
 
-# Starts the browser
 def start_browser(url):
+    """
+    Starts the browser!
+
+    :param url: Page url to navigate to
+    """
+
     global browser
     opts = Options()
     headless_check = Config.Settings.Browser.Headless
@@ -52,8 +57,12 @@ def start_browser(url):
         exit(100)  # Exit Gracefully
 
 
-# Scrapes raw lesson objects from svg
 def scrape_stundas():
+    """
+    Scrapes raw lesson objects from svg
+
+    :return: stundas - all lesson objects, class_name - class/teacher/room name
+    """
     new_viewer = Config.Settings.Scraper.Use_New_Method  # Check if new viewer enabled in settings
 
     print('Locating and parsing SVG elements!')
@@ -75,8 +84,12 @@ def scrape_stundas():
     return [stundas, class_name]
 
 
-# Opens the dropdown_list
 def open_list(list_name):
+    """
+    Opens the dropdown list!
+
+    :param list_name: Name of the list to open
+    """
     global browser
     new_viewer = Config.Settings.Scraper.Use_New_Method
 
@@ -93,8 +106,13 @@ def open_list(list_name):
     selector_button.click()
 
 
-# Scrapes the dropdown_list of people/classes/rooms from the page dropdown, so we know what
 def scrape_list(list_name):
+    """
+    Scrapes the required dropdown list!
+
+    :param list_name: Name of the dropdown list (From the UI!)
+    :return: A list of all the objects in the dropdown list!
+    """
     global browser
 
     # This XPATH works on both viewer types
@@ -102,6 +120,7 @@ def scrape_list(list_name):
 
     print('Scraping {} dropdown list!'.format(list_name))
 
+    # Open the required list, so it can be scraped
     open_list(list_name)
 
     list_items = browser.find_elements(By.XPATH, path)  # The drop down html elements
@@ -110,13 +129,18 @@ def scrape_list(list_name):
     # Loop through the elements and get their text content
     for item in list_items:
         name = item.get_attribute('innerHTML')  # Get list name text
-        names.append(name)  # Append it to the text content dropdown_list
+        names.append(name)  # Append it to the text content to the names list
 
     return names
 
 
-# Opens a table based off the class name
 def open_table(list_name, class_name):
+    """
+    Opens a table based off the class name
+
+    :param list_name: The dropdown, that the table resides in
+    :param class_name: The name of the dropdown object
+    """
     global browser
     # Open the classes dropdown
     open_list(list_name)
@@ -133,8 +157,10 @@ def open_table(list_name, class_name):
     current_class.click()
 
 
-# Closes the browser
 def close_browser():
+    """
+    Closes the browser.
+    """
     global browser
 
     # Check config to see, if it's necessary to close the browser or not.

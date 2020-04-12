@@ -75,6 +75,10 @@ def FirstLaunch():
 
     # Converts configuration settings into an easily accessible class
     class Settings:
+        """
+        Main Settings class
+        """
+
         class Stages:
             Students = config['STAGES'].getboolean('Students')
             Teachers = config['STAGES'].getboolean('Teachers')

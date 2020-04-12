@@ -1,6 +1,7 @@
 # MedsNET Timetable Scraper
 # Main Execution file
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
+
 import datetime
 
 import Config
@@ -67,6 +68,14 @@ Lesson scraping / Exporting function
 
 
 def export_all_tables(name, name_list, collection):
+    """
+    Goes through all tables, exports them to a collection, or JSON file!
+
+    :param name: Name of the tables to be exported
+    :param name_list: UI name of the tables to export (Teacher, Classrooms, Classes)
+    :param collection: Collection to export to!
+    :return:
+    """
     print('- - - Scraping {} tables! - - - '.format(name))
 
     if Settings.Database.Enabled:
@@ -82,7 +91,6 @@ def export_all_tables(name, name_list, collection):
         scraped_data = Scraper.scrape_stundas()
 
         # Sort scraped data
-        # [0] - Timetable data object, [1] - Timetable Class name
         current_lessons = Sorter.day_sorter(scraped_data, ClassList, TeacherList, RoomList)
 
         # Export to db, if selected

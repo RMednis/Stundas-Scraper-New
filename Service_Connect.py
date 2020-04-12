@@ -1,6 +1,10 @@
 # MedsNET Timetable Scraper
 # API Generator / DB Connector
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
+"""
+This script contains the functions necessary for generating and exporting a JSON API response to file, or
+exporting it to a MongoDB document for later use with an frontend application or for web API generation.
+"""
 
 import datetime
 import json
@@ -12,32 +16,23 @@ from pymongo import MongoClient
 import Config
 
 '''
-This script contains the functions necessary for generating and exporting a JSON API response to file, or 
-exporting it to a MongoDB document for later use with an frontend application or for web API generation.
-'''
-
-'''
 Utility functions
 '''
 
 
-# Function that makes a data model from sorter data object
 def make_data_model(lesson_data, class_name):
+    """
+    Makes a data model from sorter data object
+
+    :param lesson_data: Week object
+    :param class_name: Name of the scraped class
+    :return:
+    """
     return {
         "name": class_name,  # Returns the class/room/teacher name
         "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
         "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
     }
-
-
-def list_export(object_list, name, database):
-    data_list = {
-        "name": name,
-        "updated": str(datetime.datetime.now()),
-        "dropdown_list": object_list
-    }
-
-    export_to_mongo(database, "Saraksti", data_list)
 
 
 # Function that prints current collection, mainly for debugging
@@ -51,8 +46,12 @@ Database Export Functions
 '''
 
 
-# Function, to connect to the MongoDB Database
 def connect_to_mongo():
+    """
+    Connects to MongoDB
+
+    :return: Database object!
+    """
     settings = Config.Settings  # Makes the settings object easier to use
 
     client = MongoClient(
@@ -69,17 +68,47 @@ def connect_to_mongo():
 
 # Drop collection
 def drop_collection(database, collection_name):
+    """
+    Drops a collection from the database!
+
+    :param database: Database to drop from
+    :param collection_name: Name of the collection to drop
+    """
     database.drop_collection(collection_name)  # Deletes previous db collection
 
 
 # Export the data to a mongodb collection
 def export_to_mongo(database, collection_name, data):
+    """
+    Export data to a mongoDB database!
+
+    :param database: Database to export to
+    :param collection_name: Name of the collection to export to
+    :param data: Data to export
+    """
     collection = database[collection_name]  # Gets the current collection from the DB
 
     if type(data) is list:
         collection.insert_many(data)
     else:
         collection.insert_one(data)
+
+
+def list_export(object_list, name, database):
+    """
+    Exports a dropdown list object to MongoDB
+
+    :param object_list: List to export
+    :param name: Name of the list
+    :param database: Database to export to!
+    """
+    data_list = {
+        "name": name,
+        "updated": str(datetime.datetime.now()),
+        "list": object_list
+    }
+
+    export_to_mongo(database, Config.Settings.Scraper.List_Name, data_list)
 
 
 '''
@@ -118,10 +147,3 @@ def json_initialize():
         print("Could not create directory in ", folder)
     else:
         print("Path Created Successfully!")
-
-
-'''
-Other export options
-'''
-# Function, that prints the response in console
-# Should be used for development only!
