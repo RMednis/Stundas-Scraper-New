@@ -19,7 +19,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
     Initialize objects 
     """
     # Initialize the dropdown_list objects
-    pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena = list(), list(), list(), list(), list()
+    pirmdiena, otrdiena, tresdiena, ceturdiena, piekdiena, sestdiena, svetdiena = list(), list(), list(), list(), list(), list(), list()
 
     # Main lesson class/object structure
     class stunda_object:
@@ -50,7 +50,9 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         "Otrdiena": otrdiena,
         "Trešdiena": tresdiena,
         "Ceturtdiena": ceturdiena,
-        "Piektdiena": piekdiena
+        "Piektdiena": piekdiena,
+        "Sestdiena": sestdiena,
+        "Svētdiena": svetdiena
     }
 
     """
@@ -58,15 +60,27 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
     """
     # Used for sorting lessons into days based off their ypos values
     day_id = {
+        # Regular Week y positions and days
         420: pirmdiena,
         726: otrdiena,
         1032: tresdiena,
         1338: ceturdiena,
-        1644: piekdiena
+        1644: piekdiena,
+
+        # Multi-Group Lesson Bottom Elements
+        573: pirmdiena,
+        879: otrdiena,
+        1185: tresdiena,
+        1491: ceturdiena,
+        1797: piekdiena,
+        1567.5: sestdiena,
+
+        # Full Week y positions and days
+        # TODO: Add support for all full week days!
+        1440: piekdiena,
+        1695: sestdiena
     }
 
-    # Ypos values for multi-group lesson bottom elements
-    multigroup_ypos_bottom = [573, 879, 1185, 1491, 1797]
 
     # Length of a single lesson segment (Used for dividing them into standard size chunks)
     single_lesson_length = 256.5
@@ -140,18 +154,11 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
             else:
                 subject = full_field
 
-        """
-        Normalize y coordinates
-        """
-        # Used for multiple group day sorting, if the ypos is one of the bottom group elements
-        if float(ypos) in multigroup_ypos_bottom:
-            # Sets the ypos to the day it belongs in
-            ypos = list(day_id)[multigroup_ypos_bottom.index(int(ypos))]
 
         """
         Sort lesson into appropriate day, split into lesson segments
         """
-        current_day = day_id[int(ypos)]  # Finds the current day based on the subjects y position
+        current_day = day_id[float(ypos)]  # Finds the current day based on the subjects y position
 
         lesson_length = (
                 float(length) / single_lesson_length)  # Calculates how many lesson segments the lesson takes up!
