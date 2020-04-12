@@ -17,7 +17,7 @@ print('----------------------------------------------------')
 start_time = datetime.datetime.now()
 print('Start Time:', start_time)
 # Generates the config file, if there is none
-Config.FirstLaunch()
+Config.first_launch()
 
 Settings = Config.Settings
 
@@ -83,7 +83,7 @@ def export_all_tables(name, name_list, collection):
 
     for table_name in name_list:
 
-        print(' - - - Scraping {} lessons - - - '.format(table_name))
+        print(' - - - Scraping lessons from {}  - - - '.format(table_name))
         # Open the table
         Scraper.open_table(name, table_name)
 

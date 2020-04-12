@@ -15,7 +15,7 @@ global Settings
 
 
 # Default configuration!
-def FirstLaunch():
+def first_launch():
     global config
     global configPath
     global Settings
