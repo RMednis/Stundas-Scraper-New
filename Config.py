@@ -8,6 +8,7 @@ Reads and creates the configuration data required for changing vars, selecting s
 The default file is config.ini, it gets created when you first execute this script.
 """
 import configparser
+import os
 
 global config
 global configPath
@@ -26,52 +27,59 @@ def first_launch():
 
     # Stages
     config['STAGES'] = {
-        'Students': 'True',
-        'Teachers': 'True',
-        'Classrooms': 'True'
+        'Students': os.getenv('STAGE_STUDENTS', "True"),
+        'Teachers': os.getenv('STAGE_TEACHERS', 'True'),
+        'Classrooms': os.getenv('STAGE_ROOMS', 'True')
     }
 
     # Browser settings
     config['BROWSER'] = {
-        'Browser_Headless': 'True',
-        'Scrape_URL': 'https://ogrestehnikums.edupage.org/timetable/',
-        'Close_After': 'True'
+        'Browser_Headless': os.getenv('BROWSER_HEADLESS', 'True'),
+        'Scrape_URL': os.getenv('BROWSER_URL', 'https://ogrestehnikums.edupage.org/timetable/'),
+        'Close_After': os.getenv('BROWSER_CLOSE', 'True')
     }
 
     # Scraper settings
     config['SCRAPER'] = {
-        'New_Viewer': 'False',
-        'List_Name': 'Saraksti',
-        'Student_Name': 'Studenti',
-        'Teacher_Name': 'Skolotaji',
-        'Room_Name': 'Telpas'
+        'New_Viewer': os.getenv('SCRAPER_NEW', 'False'),
+        'List_Name': os.getenv('SCRAPER_LIST_NAME', 'Saraksti'),
+        'Student_Name': os.getenv('SCRAPER_STUDENT_NAME', 'Studenti'),
+        'Teacher_Name': os.getenv('SCRAPER_TEACHER_NAME', 'Skolotaji'),
+        'Room_Name': os.getenv('SCRAPER_ROOM_NAME', 'Telpas')
     }
 
     # Database settings
     config['DATABASE'] = {
-        'Used': 'False',
-        'IP': 'localhost',
-        'Port': '27017',
-        'Database': 'Stundas',
-        'User': 'User',
-        'Password': 'P@ssW0rd!',
-        'Table_Collection_Prefix': 'Tabulas_'
+        'Used': os.getenv('MONGO_ENABLED', 'False'),
+        'IP': os.getenv("MONGO_IP", 'localhost'),
+        'Port': os.getenv("MONGO_PORT", '27017'),
+        'Database': os.getenv("MONGO_DATABASE", 'Stundas'),
+        'User': os.getenv("MONGO_USER", 'User'),
+        'Password': os.getenv("MONGO_PASSWORD", 'P@ssW0rd!'),
+        'Table_Collection_Prefix': os.getenv("MONGO_COLLECTION_PREFIX", 'Tabulas_')
     }
 
     # File export settings
     config['FILE'] = {
-        'Used': 'False',
-        'Path': './Export/',
-        'Suffix': '_data.json'
+        'Used': os.getenv("FILE_ENABLED", 'False'),
+        'Path': os.getenv("FILE_EXPORT_PATH", './Export/'),
+        'Suffix': os.getenv("FILE_SUFFIX", '_data.json')
     }
 
-    # Checks if a config file already exists, if it doesn't, creates a default one!
+    # Checks if a config file already exists or if running from docker, if not, creates a default one!
     if not config.read(configPath):
         print('No {} file found! Creating a default one!'.format(configPath))
-        print('Please update the values as needed!')
+
+        # Write a default config.ini
         with open(configPath, 'w') as configfile:
             config.write(configfile)
-        exit(1)
+
+        # Check if running in a docker container or not
+        if os.getenv("DOCKER_ENABLED", False):
+            print('You are running in a docker container, settings should have been written from ENV automatically.')
+        else:
+            print('Please update the values as needed!')
+            exit(1)
 
     # Converts configuration settings into an easily accessible class
     class Settings:

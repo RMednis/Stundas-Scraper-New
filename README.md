@@ -69,12 +69,49 @@ Run `Main.py` to generate a default `config.ini` file, or rename the existing `c
 python3 Main.py
 ```
 
-Edit the settings in `config.ini` to match your needs. (At least the *scrape_url* section)
+Edit the settings in `config.ini` to match your needs. (At minimum the *scrape_url* section)
 
 Run `Main.py` to scrape tables.
+```
+python3 Main.py
+```
 #### Docker
+The entire scraper can also be run containerized. For this we provide both a simple ``Dockerfile`` and
+a ``docker-compose.yml`` file. 
 
-In development...
+Clone the repository
+```
+git clone https://github.com/RMednis/Stundas-Scraper-New
+```
+
+
+All the settings in ``config.ini`` can be set through environment variables when running the image.
+
+If you are running this without docker-compose, then you can either rename the ``config.sample`` file to ``config.ini``,
+change the required settings and build the image or build the image without the config file and pass the configuration 
+variables directly as ENV parameters.
+
+To build the image run
+```
+docker build --tag stundas .
+```
+in the repository's folder.
+
+Run the container with
+```
+docker run stundas
+```
+If you are running this with **docker-compose**, then you can edit the pre-existing ``docker-compose.yml`` files environment
+ settings to match your needs.
+
+Then build the container using 
+```
+docker-compose build
+```
+in the repository's folder, and run it using
+```
+docker-compose run stundas_scraper:latest
+```
 
 ## ToDo
 - [x] Single Timetable Scraping.
