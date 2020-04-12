@@ -110,24 +110,35 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
         # Matches the field content to the field type
         for field in data:
 
-            # If the field is in the teacher dropdown_list, it's a teacher field
+            # Strip whitespace
+            field.strip()
+
+            # Set full text object to the current field object
+            full_field = field
+
+            # If the field contains a / we split it and only match the first part!
+            if "/" in field:
+                field = field.split("/")[0]
+
+            # If the field is in the class list, it's a teacher field
             if field in class_list:
-                students = field
+                students = full_field
 
+            # If the field is in the Teacher list, it's a teacher field.
             elif field in teacher_list:
-                teacher = field
+                teacher = full_field
 
-            # If the field is in the room dropdown_list, it's a room field
+            # If the field is in the room list, it's a room field
             elif field in room_list:
-                room = field
+                room = full_field
 
-            # If the field is in the group dropdown_list, it's a group field
+            # If the field is in the group list, it's a group field
             elif field in groups:
-                group = field
+                group = full_field
 
             # If none of the above match, it's a subject field
             else:
-                subject = field
+                subject = full_field
 
         """
         Normalize y coordinates
