@@ -21,7 +21,7 @@ in the configuration file generated on first start.
 
 ## Getting Started
 
-This project is built on Python 3.7, and uses the Selenium browser automation suite for scraping.
+This project is built on Python 3.7, and uses the [Selenium](https://pypi.org/project/selenium/) browser automation suite for scraping.
 
 Currently only Firefox is supported, chromium support should be possible, but is currently not a priority.
 

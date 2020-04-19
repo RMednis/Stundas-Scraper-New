@@ -49,9 +49,9 @@ if Config.Settings.Database.Enabled:
     print('Exporting Class dropdown list to database...')
     Service_Connect.drop_collection(Database, Settings.Scraper.List_Name)
 
-    Service_Connect.list_export(RoomList, Settings.Scraper.Student_Table_Name, Database)
+    Service_Connect.list_export(RoomList, Settings.Scraper.Room_Table_Name, Database)
     Service_Connect.list_export(TeacherList, Settings.Scraper.Teacher_Table_Name, Database)
-    Service_Connect.list_export(ClassList, Settings.Scraper.Teacher_Table_Name, Database)
+    Service_Connect.list_export(ClassList, Settings.Scraper.Student_Table_Name, Database)
 
 if Settings.File.Enabled:
     # Creates the directory structure required, deletes old data
