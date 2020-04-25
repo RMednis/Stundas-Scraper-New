@@ -94,7 +94,7 @@ def open_list(list_name):
     new_viewer = Config.Settings.Scraper.Use_New_Method
 
     if new_viewer:  # Use the XPATH for the new version viewer
-        button_path = "//div[@id='fitheight']//div/span[@title='{}']".format(list_name)
+        button_path = "//*[@id='skin_PageContent_2']/div/div/div/span[@title='{}']".format(list_name)
     else:  # Use the XPATH for the old version viewer
         button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='{}']".format(
             list_name)
