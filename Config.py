@@ -41,7 +41,7 @@ def first_launch():
 
     # Scraper settings
     config['SCRAPER'] = {
-        'New_Viewer': os.getenv('SCRAPER_NEW', 'False'),
+        'New_Viewer': os.getenv('SCRAPER_NEW', 'True'),
         'List_Name': os.getenv('SCRAPER_LIST_NAME', 'Saraksti'),
         'Student_Name': os.getenv('SCRAPER_STUDENT_NAME', 'Studenti'),
         'Teacher_Name': os.getenv('SCRAPER_TEACHER_NAME', 'Skolotaji'),

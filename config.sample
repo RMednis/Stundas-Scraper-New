@@ -12,7 +12,7 @@ scrape_url = https://ogrestehnikums.edupage.org/timetable/
 close_after = True
 
 [SCRAPER]
-new_viewer = False
+new_viewer = True
 list_name = Saraksti
 student_name = Studenti
 teacher_name = Skolotaji
