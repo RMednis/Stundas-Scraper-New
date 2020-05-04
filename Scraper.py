@@ -24,20 +24,15 @@ def start_browser(url):
     global browser
     opts = Options()
     headless_check = Config.Settings.Browser.Headless
-    new_viewer = Config.Settings.Scraper.Use_New_Method
 
     # Print current config to console for debugging
     print('Headless: ', headless_check)
     print('URL:      ', url)
-    print('New Viewer:', new_viewer)
 
     opts.headless = headless_check  # Sets headless state based off the headless_check setting
 
     # Sets which div will be checked to determine when the page has fully loaded depending on version
-    if new_viewer:  # New viewer checked element
-        checked_element = (By.XPATH, "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']")
-    else:  # Old viewer checked element
-        checked_element = (By.XPATH, '//*[@id="ttonline_printpreview"]/div//*[name()="svg"]')
+    checked_element = (By.XPATH, "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']")
 
     print('Launching browser...')
     browser = Firefox(options=opts)  # Launches the browser with options set above
@@ -63,16 +58,12 @@ def scrape_stundas():
 
     :return: stundas - all lesson objects, class_name - class/teacher/room name
     """
-    new_viewer = Config.Settings.Scraper.Use_New_Method  # Check if new viewer enabled in settings
 
     print('Locating and parsing SVG elements!')
     # Check if the new/testing version of the timetable viewer is being used.
-    if new_viewer:  # Use the XPATH for the new version viewer
-        path = "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
-        path_class_name = "//div[contains(@class, 'print-nobreak')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
-    else:  # Use the XPATH for the old version viewer
-        path = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
-        path_class_name = "//div[contains(@class, 'print-sheet')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
+
+    path = "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
+    path_class_name = "//div[contains(@class, 'print-nobreak')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
 
     # Find all the lesson objects in the svg
     stundas = browser.find_elements_by_xpath(path)
@@ -91,13 +82,8 @@ def open_list(list_name):
     :param list_name: Name of the list to open
     """
     global browser
-    new_viewer = Config.Settings.Scraper.Use_New_Method
 
-    if new_viewer:  # Use the XPATH for the new version viewer
-        button_path = "//*[@id='skin_PageContent_2']/div/div/div/span[@title='{}']".format(list_name)
-    else:  # Use the XPATH for the old version viewer
-        button_path = "//div[contains(@class, 'asc-ribbon')]//div[contains(@class, 'left')]//span[text()='{}']".format(
-            list_name)
+    button_path = "//*[@id='skin_PageContent_2']/div/div/div/span[@title='{}']".format(list_name)
 
     # Find the selector button in the document
     selector_button = browser.find_element(By.XPATH, button_path)
