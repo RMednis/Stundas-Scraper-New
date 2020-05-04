@@ -28,9 +28,13 @@ def make_data_model(lesson_data, class_name):
     :param class_name: Name of the scraped class
     :return:
     """
+
+    now = datetime.datetime.now()  # Get the current time
+    now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+
     return {
         "name": class_name,  # Returns the class/room/teacher name
-        "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
+        "updated": now,  # The update time, formatted to ISO8601
         "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
     }
 
@@ -102,9 +106,13 @@ def list_export(object_list, name, database):
     :param name: Name of the list
     :param database: Database to export to!
     """
+
+    now = datetime.datetime.now()  # Get the current time
+    now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+
     data_list = {
         "name": name,
-        "updated": str(datetime.datetime.now()),
+        "updated": now,
         "list": object_list
     }
 

@@ -15,7 +15,7 @@ print('   Reinis Gunārs Mednis, Ikars Melnalksnis - 2020')
 print('----------------------------------------------------')
 
 start_time = datetime.datetime.now()
-print('Start Time:', start_time)
+print('Start Time:', start_time.isoformat())
 # Generates the config file, if there is none
 Config.first_launch()
 
@@ -122,7 +122,7 @@ print("- - - Scraping complete! :) - - - ")
 
 # Time taken calculation
 end_time = datetime.datetime.now()
-print("Scraping finished:", end_time)
+print("Scraping finished:", end_time.isoformat())
 print("Scraping took:", end_time - start_time)
 
 # Close browser cleanly, if selected
