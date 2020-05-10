@@ -1,71 +1,130 @@
 # MedsNET Timetable Scraper
 # Main Execution file
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
-import configparser
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
+import datetime
 
-import Sorter
-import Scraper
 import Config
+import Scraper
 import Service_Connect
+import Sorter
 
+print('------------------Stundas-Scraper-------------------')
+print('Timetable Scraping, Sorting and Exporting scripts!')
+print('   Reinis Gunārs Mednis, Ikars Melnalksnis - 2020')
 print('----------------------------------------------------')
-print('Timetable Scraping, Sorting and API creation script!')
-print('Reinis Gunārs Mednis, Ikars Melnalksnis - 2020')
-print('----------------------------------------------------')
 
-'''
-Data Scraping
-'''
+start_time = datetime.datetime.now()
+print('Start Time:', start_time.isoformat())
+# Generates the config file, if there is none
+Config.first_launch()
 
-# Generates the config file, if first launch
-Config.FirstLaunch()
+Settings = Config.Settings
 
-# Initialization
+# Start web browser
+Scraper.start_browser(Config.Settings.Browser.URL)
+
+"""
+List Scraping
+"""
+
+# Scrape class dropdown_list
+ClassList = Scraper.scrape_list('Classes')
+
+# Scrape teacher dropdown_list
+TeacherList = Scraper.scrape_list('Teachers')
+
+# Scrape classroom dropdown_list
+RoomList = Scraper.scrape_list('Classrooms')
+
+"""
+File/Database initialization
+"""
+
 if Config.Settings.Database.Enabled:
     # Connects to the Database
     Database = Service_Connect.connect_to_mongo()
-else:
+
+    # Export class dropdown_list to database table
+    print('Exporting Class dropdown list to database...')
+    Service_Connect.drop_collection(Database, Settings.Scraper.List_Name)
+
+    Service_Connect.list_export(RoomList, Settings.Scraper.Room_Table_Name, Database)
+    Service_Connect.list_export(TeacherList, Settings.Scraper.Teacher_Table_Name, Database)
+    Service_Connect.list_export(ClassList, Settings.Scraper.Student_Table_Name, Database)
+
+if Settings.File.Enabled:
     # Creates the directory structure required, deletes old data
     Service_Connect.json_initialize()
 
-# Start web browser
-Scraper.startBrowser(Config.Settings.Browser.URL)
+    # Exports class dropdown_list to a classes.json file
+    Service_Connect.list_to_json(ClassList, "Kursi")
+    Service_Connect.list_to_json(TeacherList, "Skolotaji")
+    Service_Connect.list_to_json(RoomList, "Telpas")
 
-# Scrape class list
-# [0] - Names only, [1] - Selenium Objects
-ClassList = Scraper.scrapeList()
+"""
+Lesson scraping / Exporting function
+"""
 
-# Scrape classes
-# Scraper.scrapeClasses(Config.Settings.Browser.URL)
 
-# Scrape initial page
-Scraped_Data = Scraper.scrapeStundas()
+def export_all_tables(name, name_list, collection):
+    """
+    Goes through all tables, exports them to a collection, or JSON file!
 
-# Sort scraped data
-# [0] - Timetable data object, [1] - Timetable Class name
-Current_Lessons = Sorter.DaySorter(Scraped_Data)
+    :param name: Name of the tables to be exported
+    :param name_list: UI name of the tables to export (Teacher, Classrooms, Classes)
+    :param collection: Collection to export to!
+    :return:
+    """
+    print('- - - Scraping {} tables! - - - '.format(name))
 
-# Depending on settings it will either export to database or json file
-if Config.Settings.Database.Enabled:
-    # Generates a DB data model from the returned data and the class name
-    Database_model = Service_Connect.make_data_model(Current_Lessons[0], Current_Lessons[1])
+    if Settings.Database.Enabled:
+        Service_Connect.drop_collection(Database, collection)
 
-    # Pass the modeled data to the DB
-    print('Exporting timetable data to database...')
-    Service_Connect.export_to_mongo(Database, 'Skoleni', Database_model)
+    for table_name in name_list:
 
-    # Export class list to database table
-    print('Exporting Class list to database...')
-    Service_Connect.export_to_mongo(Database, "Klases", ClassList[0])
-else:
-    # Exports class list to a classes.json file
-    Service_Connect.list_to_json(ClassList[0])
+        print(' - - - Scraping lessons from {}  - - - '.format(table_name))
+        # Open the table
+        Scraper.open_table(name, table_name)
 
-    # Exports lesson data and class name to file.
-    Service_Connect.lessons_to_json(Current_Lessons[0], Current_Lessons[1])
+        # Scrape initial page
+        scraped_data = Scraper.scrape_stundas()
+
+        # Sort scraped data
+        current_lessons = Sorter.day_sorter(scraped_data, ClassList, TeacherList, RoomList)
+
+        # Export to db, if selected
+        if Settings.Database.Enabled:
+            # Generates a DB data model from the returned data and the class name
+            database_model = Service_Connect.make_data_model(current_lessons[0], current_lessons[1])
+
+            # Pass the modeled data to the DB
+            print('Exporting timetable data to database...')
+            Service_Connect.export_to_mongo(Database, collection, database_model)
+
+        # Export to file, if selected
+        if Settings.File.Enabled:
+            # Exports lesson data and class name to file.
+            Service_Connect.lessons_to_json(current_lessons[0], current_lessons[1])
+
+
+'''
+Main function calls
+'''
+if Settings.Stages.Students:
+    export_all_tables("Classes", ClassList, Settings.Database.Table_Prefix + Settings.Scraper.Student_Table_Name)
+if Settings.Stages.Teachers:
+    export_all_tables("Teachers", TeacherList, Settings.Database.Table_Prefix + Settings.Scraper.Teacher_Table_Name)
+if Settings.Stages.Classrooms:
+    export_all_tables("Classrooms", RoomList, Settings.Database.Table_Prefix + Settings.Scraper.Room_Table_Name)
+
+print("- - - Scraping complete! :) - - - ")
+
+# Time taken calculation
+end_time = datetime.datetime.now()
+print("Scraping finished:", end_time.isoformat())
+print("Scraping took:", end_time - start_time)
 
 # Close browser cleanly, if selected
-Scraper.closeBrowser()
+Scraper.close_browser()
+print("- - - Goodbye! - - -")

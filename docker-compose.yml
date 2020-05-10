@@ -1,0 +1,34 @@
+version: "3.0"
+services:
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: stundas_scraper:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 5
+        window: 300s
+    environment:
+      # Tells the script it's running in a container
+      - DOCKER_ENABLED=True
+      # The URL of the edupage site you want to scrape
+      - BROWSER_URL=<The edupage site you want to scrape>
+      - SCRAPER_NEW=False
+      # Names of the collections the script will create in the DB
+      - SCRAPER_LIST_NAME=Saraksti
+      - SCRAPER_STUDENT_NAME=Saraksti
+      - SCRAPER_TEACHER_NAME=Skolotaji
+      - SCRAPER_ROOM_NAME=Telpas
+      # Database connection properties
+      - MONGO_ENABLED=True
+      - MONGO_IP=<Insert Your DB IP Here>
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=<Insert Your DB Password Here>
+      - MONGO_USER=<Insert Your DB User Here>
+      - MONGO_PASSWORD=<Insert your DB Pass Here>
+      - MONGO_COLLECTION_PREFIX=Tabulas_
+      # File properties
+      - FILE_ENABLED=False

@@ -1,29 +1,40 @@
 # MedsNET Timetable Scraper
 # API Generator / DB Connector
 # Reinis Gunārs Mednis / Ikars Melnalksnis 2020
+"""
+This script contains the functions necessary for generating and exporting a JSON API response to file, or
+exporting it to a MongoDB document for later use with an frontend application or for web API generation.
+"""
 
-from pymongo import MongoClient
 import datetime
-import Config
 import json
 import os
 import shutil
 
-'''
-This script contains the functions necessary for generating and exporting a JSON API response to file, or 
-exporting it to a MongoDB document for later use with an frontend application or for web API generation.
-'''
+from pymongo import MongoClient
+
+import Config
 
 '''
 Utility functions
 '''
 
 
-# Function that makes a data model from sorter data object
 def make_data_model(lesson_data, class_name):
+    """
+    Makes a data model from sorter data object
+
+    :param lesson_data: Week object
+    :param class_name: Name of the scraped class
+    :return:
+    """
+
+    now = datetime.datetime.now()  # Get the current time
+    now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+
     return {
-        "class": class_name,
-        "updated": str(datetime.datetime.now()),  # Gets the update time dynamically.
+        "name": class_name,  # Returns the class/room/teacher name
+        "updated": now,  # The update time, formatted to ISO8601
         "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
     }
 
@@ -38,8 +49,13 @@ def print_db(collection):
 Database Export Functions
 '''
 
-# Function, to connect to the MongoDB Database
+
 def connect_to_mongo():
+    """
+    Connects to MongoDB
+
+    :return: Database object!
+    """
     settings = Config.Settings  # Makes the settings object easier to use
 
     client = MongoClient(
@@ -54,10 +70,26 @@ def connect_to_mongo():
     return database  # Returns database to caller function
 
 
-# Export the classes lessons to a
-def export_to_mongo(database, collection_name, data):
-    #
+# Drop collection
+def drop_collection(database, collection_name):
+    """
+    Drops a collection from the database!
+
+    :param database: Database to drop from
+    :param collection_name: Name of the collection to drop
+    """
     database.drop_collection(collection_name)  # Deletes previous db collection
+
+
+# Export the data to a mongodb collection
+def export_to_mongo(database, collection_name, data):
+    """
+    Export data to a mongoDB database!
+
+    :param database: Database to export to
+    :param collection_name: Name of the collection to export to
+    :param data: Data to export
+    """
     collection = database[collection_name]  # Gets the current collection from the DB
 
     if type(data) is list:
@@ -65,9 +97,26 @@ def export_to_mongo(database, collection_name, data):
     else:
         collection.insert_one(data)
 
-    print_db(collection)
-    # TODO: Fix this hacky mess, instead of converting to JSON than dropping that in, we should find a way to do that
-    #  directly!
+
+def list_export(object_list, name, database):
+    """
+    Exports a dropdown list object to MongoDB
+
+    :param object_list: List to export
+    :param name: Name of the list
+    :param database: Database to export to!
+    """
+
+    now = datetime.datetime.now()  # Get the current time
+    now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+
+    data_list = {
+        "name": name,
+        "updated": now,
+        "list": object_list
+    }
+
+    export_to_mongo(database, Config.Settings.Scraper.List_Name, data_list)
 
 
 '''
@@ -84,12 +133,13 @@ def lessons_to_json(lesson_data, class_name):
     json.dump(make_data_model(lesson_data, class_name), file, ensure_ascii=False, indent=4)
 
 
-def list_to_json(list):
+def list_to_json(dropdown_list, name):
     # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
-    file = open(Config.Settings.File.Path + 'classes.json', 'w')
+    file = open(Config.Settings.File.Path + name + '.json', 'w')
 
     # Creates a template and saves it to a file
-    json.dump(list, file, ensure_ascii=False, indent=4)
+    json.dump(dropdown_list, file, ensure_ascii=False, indent=4)
+
 
 def json_initialize():
     folder = Config.Settings.File.Path
@@ -105,10 +155,3 @@ def json_initialize():
         print("Could not create directory in ", folder)
     else:
         print("Path Created Successfully!")
-
-
-'''
-Other export options
-'''
-# Function, that prints the response in console
-# Should be used for development only!
