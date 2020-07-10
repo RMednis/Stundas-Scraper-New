@@ -107,7 +107,7 @@ def list_export(object_list, name, database):
     """
 
     now = datetime.datetime.now()  # Get the current time
-    now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+    now = now.replace(microsecond=0)  # Drop microseconds, covert to ISO 8601
     list_cleaned = list()
 
     for item in object_list:
