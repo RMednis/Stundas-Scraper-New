@@ -29,12 +29,11 @@ def make_data_model(lesson_data, class_name):
     :return:
     """
 
-    now = datetime.datetime.now()  # Get the current time
-    now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+    now = datetime.datetime.now().replace(microsecond=0)  # Get the current time
 
     return {
-        "name": class_name,  # Returns the class/room/teacher name
-        "updated": now,  # The update time, formatted to ISO8601
+        "name": class_name.replace("/", ","),  # Returns the class/room/teacher name
+        "updated": now,  # The update time
         "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
     }
 
@@ -109,11 +108,16 @@ def list_export(object_list, name, database):
 
     now = datetime.datetime.now()  # Get the current time
     now = str(now.replace(microsecond=0).isoformat())  # Drop microseconds, covert to ISO 8601
+    list_cleaned = list()
+
+    for item in object_list:
+        item = item.replace("/", ",")
+        list_cleaned.append(item)
 
     data_list = {
         "name": name,
         "updated": now,
-        "list": object_list
+        "list": list_cleaned
     }
 
     export_to_mongo(database, Config.Settings.Scraper.List_Name, data_list)
