@@ -134,10 +134,10 @@ File Export Functions
 # Function, that exports the JSON response to a file
 def lessons_to_json(lesson_data, class_name):
     # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
-    file = open(Config.Settings.File.Path + class_name + Config.Settings.File.Suffix, 'w')
+    file = open(Config.Settings.File.Path + class_name.replace("/", ",") + Config.Settings.File.Suffix, 'w')
 
     # Creates a template and saves it to a file
-    json.dump(make_data_model(lesson_data, class_name.replace("/", ","), "json"), file, ensure_ascii=False, indent=4)
+    json.dump(make_data_model(lesson_data, class_name, "json"), file, ensure_ascii=False, indent=4)
 
 
 def list_to_json(dropdown_list, name):
