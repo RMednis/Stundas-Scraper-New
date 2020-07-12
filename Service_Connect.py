@@ -20,16 +20,19 @@ Utility functions
 '''
 
 
-def make_data_model(lesson_data, class_name):
+def make_data_model(lesson_data, class_name, req_type):
     """
     Makes a data model from sorter data object
 
     :param lesson_data: Week object
     :param class_name: Name of the scraped class
+    :param req_type: The type of data that should be returned (JSON formatted or DB)
     :return:
     """
 
     now = datetime.datetime.now().replace(microsecond=0)  # Get the current time
+    if req_type == "json":
+        now = str(now.isoformat())
 
     return {
         "name": class_name.replace("/", ","),  # Returns the class/room/teacher name
@@ -134,7 +137,7 @@ def lessons_to_json(lesson_data, class_name):
     file = open(Config.Settings.File.Path + class_name + Config.Settings.File.Suffix, 'w')
 
     # Creates a template and saves it to a file
-    json.dump(make_data_model(lesson_data, class_name), file, ensure_ascii=False, indent=4)
+    json.dump(make_data_model(lesson_data, class_name, "json"), file, ensure_ascii=False, indent=4)
 
 
 def list_to_json(dropdown_list, name):
