@@ -96,7 +96,7 @@ def export_all_tables(name, name_list, collection):
         # Export to db, if selected
         if Settings.Database.Enabled:
             # Generates a DB data model from the returned data and the class name
-            database_model = Service_Connect.make_data_model(current_lessons[0], current_lessons[1])
+            database_model = Service_Connect.make_data_model(current_lessons[0], current_lessons[1], "mongo")
 
             # Pass the modeled data to the DB
             print('Exporting timetable data to database...')
