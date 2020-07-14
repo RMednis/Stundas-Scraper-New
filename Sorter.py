@@ -90,14 +90,14 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
     """
     Scraping the class name
     """
-    class_name = scraped_data[1][0]
+    class_name = scraped_data["name"][0]
 
     if "Teacher " in class_name:  # If the field contains the text 'Teacher'
         class_name = class_name.split("Teacher ")[1]  # Use only the Name (ignoring the Teacher part)
 
     print('Converting raw data to lesson objects...')
 
-    for stunda in scraped_data[0]:
+    for stunda in scraped_data["stundas"]:
 
         """
         Initialize variables
@@ -193,4 +193,8 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
 
     print('Sorting complete!')
 
-    return week, class_name
+    return {
+        "week": week,
+        "name": class_name,
+        "date": scraped_data["date"]
+    }

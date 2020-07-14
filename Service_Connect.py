@@ -20,24 +20,35 @@ Utility functions
 '''
 
 
-def make_data_model(lesson_data, class_name, req_type):
+def make_data_model(lesson_data, req_type):
     """
     Makes a data model from sorter data object
 
     :param lesson_data: Week object
-    :param class_name: Name of the scraped class
-    :param req_type: The type of data that should be returned (JSON formatted or DB)
+    :param req_type: The type of data that should be returned (json or mongo)
     :return:
     """
 
     now = datetime.datetime.now().replace(microsecond=0)  # Get the current time
-    if req_type == "json":
+
+    # Split and convert table date filed to datetime objects
+    date = lesson_data["date"].split("-")
+    date_from = datetime.datetime.strptime(date[0].strip(' '), '%d.%m.%Y.')
+    date_to = datetime.datetime.strptime(date[1].strip(' '), '%d.%m.%Y.')
+
+    if req_type == "json":  # Json parser does not serialize datetime, so we convert to string
         now = str(now.isoformat())
+        date_from = str(date_from.isoformat())
+        date_to = str(date_to.isoformat())
 
     return {
-        "name": class_name.replace("/", ","),  # Returns the class/room/teacher name
-        "updated": now,  # The update time
-        "lessons": json.loads(json.dumps(lesson_data, default=lambda x: x.get_dict()))  # Dump/load data to json
+        "name": lesson_data["name"].replace("/", ","),  # Returns the class/room/teacher name, removing "/" chars
+        "updated": now,  # Current time (For knowing when the script updated this object)
+        "date": {
+            "from": date_from,
+            "to": date_to
+        },
+        "lessons": json.loads(json.dumps(lesson_data["week"], default=lambda x: x.get_dict()))  # Dump/load data to json
     }
 
 
@@ -132,12 +143,12 @@ File Export Functions
 
 
 # Function, that exports the JSON response to a file
-def lessons_to_json(lesson_data, class_name):
+def lessons_to_json(lesson_data):
     # Generates a file path by taking the class name, appending a suffix and placing it in the designated folder.
-    file = open(Config.Settings.File.Path + class_name.replace("/", ",") + Config.Settings.File.Suffix, 'w')
+    file = open(Config.Settings.File.Path + lesson_data["name"].replace("/", ",") + Config.Settings.File.Suffix, 'w')
 
     # Creates a template and saves it to a file
-    json.dump(make_data_model(lesson_data, class_name, "json"), file, ensure_ascii=False, indent=4)
+    json.dump(make_data_model(lesson_data.stundas, "json"), file, ensure_ascii=False, indent=4)
 
 
 def list_to_json(dropdown_list, name):

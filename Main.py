@@ -96,7 +96,7 @@ def export_all_tables(name, name_list, collection):
         # Export to db, if selected
         if Settings.Database.Enabled:
             # Generates a DB data model from the returned data and the class name
-            database_model = Service_Connect.make_data_model(current_lessons[0], current_lessons[1], "mongo")
+            database_model = Service_Connect.make_data_model(current_lessons, "mongo")
 
             # Pass the modeled data to the DB
             print('Exporting timetable data to database...')
@@ -105,7 +105,7 @@ def export_all_tables(name, name_list, collection):
         # Export to file, if selected
         if Settings.File.Enabled:
             # Exports lesson data and class name to file.
-            Service_Connect.lessons_to_json(current_lessons[0], current_lessons[1])
+            Service_Connect.lessons_to_json(current_lessons)
 
 
 '''

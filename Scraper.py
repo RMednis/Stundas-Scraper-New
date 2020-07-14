@@ -56,23 +56,32 @@ def scrape_stundas():
     """
     Scrapes raw lesson objects from svg
 
-    :return: stundas - all lesson objects, class_name - class/teacher/room name
+    :return: dictionary containing stundas - lesson week, name - class name, date - table date
     """
 
     print('Locating and parsing SVG elements!')
     # Check if the new/testing version of the timetable viewer is being used.
 
-    path = "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
+    path_stundas = "//div[contains(@class, 'print-nobreak')]/div//*[name()='svg']//*[name()='g']//*[name()='rect']//*[name()='title']"
     path_class_name = "//div[contains(@class, 'print-nobreak')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='166.875']"
+    path_table_date = "//div[contains(@class, 'print-nobreak')]//*[name()='svg']//*[name()='g']//*[name()='text' and @y='107.5']"
 
     # Find all the lesson objects in the svg
-    stundas = browser.find_elements_by_xpath(path)
+    stundas = browser.find_elements_by_xpath(path_stundas)
 
     # Find the class name in the svg
     class_name = browser.find_element(By.XPATH, path_class_name).get_property('innerHTML').splitlines()
 
-    # Returns both the class name and the dropdown_list of table objects.
-    return [stundas, class_name]
+    # Find the date the table applies to
+    table_date = browser.find_element(By.XPATH, path_table_date).get_property('innerHTML')
+    print(table_date)
+
+    # Returns week lesson object, class name and table date
+    return {
+        "stundas": stundas,
+        "name": class_name,
+        "date": table_date
+    }
 
 
 def open_list(list_name):
