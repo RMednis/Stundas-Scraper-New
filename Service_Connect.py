@@ -148,7 +148,7 @@ def lessons_to_json(lesson_data):
     file = open(Config.Settings.File.Path + lesson_data["name"].replace("/", ",") + Config.Settings.File.Suffix, 'w')
 
     # Creates a template and saves it to a file
-    json.dump(make_data_model(lesson_data.stundas, "json"), file, ensure_ascii=False, indent=4)
+    json.dump(make_data_model(lesson_data, "json"), file, ensure_ascii=False, indent=4)
 
 
 def list_to_json(dropdown_list, name):
