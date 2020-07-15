@@ -97,6 +97,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
 
     print('Converting raw data to lesson objects...')
 
+
     for stunda in scraped_data["stundas"]:
 
         """
@@ -176,8 +177,12 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
     """
     Sort lessons in days by their x coordinates
     """
+    total_lessons = 0  # Counting variable
+
     for day in week:
         week[day].sort(key=lambda item: float(item.x))  # Takes x coordinate as the key to sort by
+
+        total_lessons += len(week[day])
 
         for lesson in week[day]:
             # First lesson of the day
@@ -191,10 +196,11 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
                 # Calculating how many lectures are in between last and current lesson + last lesson index
                 lesson.index = ((lesson.x - last_lesson.x) / single_lesson_length) + last_lesson.index
 
-    print('Sorting complete!')
+    print('Sorted {} lessons!'.format(total_lessons))
 
     return {
         "week": week,
+        "total": total_lessons,
         "name": class_name,
         "date": scraped_data["date"]
     }

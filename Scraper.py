@@ -74,7 +74,6 @@ def scrape_stundas():
 
     # Find the date the table applies to
     table_date = browser.find_element(By.XPATH, path_table_date).get_property('innerHTML')
-    print(table_date)
 
     # Returns week lesson object, class name and table date
     return {

@@ -48,6 +48,7 @@ def make_data_model(lesson_data, req_type):
             "from": date_from,
             "to": date_to
         },
+        "total_lessons": lesson_data["total"],
         "lessons": json.loads(json.dumps(lesson_data["week"], default=lambda x: x.get_dict()))  # Dump/load data to json
     }
 
