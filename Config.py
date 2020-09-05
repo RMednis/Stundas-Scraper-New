@@ -27,16 +27,16 @@ def first_launch():
 
     # Stages
     config['STAGES'] = {
-        'Students': os.getenv('STAGE_STUDENTS', "True"),
-        'Teachers': os.getenv('STAGE_TEACHERS', 'True'),
-        'Classrooms': os.getenv('STAGE_ROOMS', 'True')
+        'Students': os.getenv('STAGE_STUDENTS', True),
+        'Teachers': os.getenv('STAGE_TEACHERS', True),
+        'Classrooms': os.getenv('STAGE_ROOMS', True)
     }
 
     # Browser settings
     config['BROWSER'] = {
-        'Browser_Headless': os.getenv('BROWSER_HEADLESS', 'True'),
+        'Browser_Headless': os.getenv('BROWSER_HEADLESS', True),
         'Scrape_URL': os.getenv('BROWSER_URL', 'https://ogrestehnikums.edupage.org/timetable/'),
-        'Close_After': os.getenv('BROWSER_CLOSE', 'True')
+        'Close_After': os.getenv('BROWSER_CLOSE', True)
     }
 
     # Scraper settings
@@ -44,12 +44,13 @@ def first_launch():
         'List_Name': os.getenv('SCRAPER_LIST_NAME', 'Saraksti'),
         'Student_Name': os.getenv('SCRAPER_STUDENT_NAME', 'Studenti'),
         'Teacher_Name': os.getenv('SCRAPER_TEACHER_NAME', 'Skolotaji'),
-        'Room_Name': os.getenv('SCRAPER_ROOM_NAME', 'Telpas')
+        'Room_Name': os.getenv('SCRAPER_ROOM_NAME', 'Telpas'),
+        'Time_Export': os.getenv('SCRAPER_TIME_EXPORT', False)
     }
 
     # Database settings
     config['DATABASE'] = {
-        'Used': os.getenv('MONGO_ENABLED', 'False'),
+        'Used': os.getenv('MONGO_ENABLED', False),
         'IP': os.getenv("MONGO_IP", 'localhost'),
         'Port': os.getenv("MONGO_PORT", '27017'),
         'Database': os.getenv("MONGO_DATABASE", 'Stundas'),
@@ -60,7 +61,7 @@ def first_launch():
 
     # File export settings
     config['FILE'] = {
-        'Used': os.getenv("FILE_ENABLED", 'False'),
+        'Used': os.getenv("FILE_ENABLED", False),
         'Path': os.getenv("FILE_EXPORT_PATH", './Export/'),
         'Suffix': os.getenv("FILE_SUFFIX", '_data.json')
     }
@@ -76,6 +77,7 @@ def first_launch():
         # Check if running in a docker container or not
         if os.getenv("DOCKER_ENABLED", False):
             print('You are running in a docker container, settings should have been written from ENV automatically.')
+
         else:
             print('Please update the values as needed!')
             exit(1)
@@ -101,6 +103,7 @@ def first_launch():
             Teacher_Table_Name = config['SCRAPER']['Teacher_Name']
             Room_Table_Name = config['SCRAPER']['Room_Name']
             List_Name = config['SCRAPER']['List_Name']
+            Time_Export = config['SCRAPER'].getboolean('Time_Export')
 
         class Database:
             Enabled = config['DATABASE'].getboolean('Used')

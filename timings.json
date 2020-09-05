@@ -1,0 +1,195 @@
+{
+  "updated": "2020-09-03T01:34:44+0000",
+  "lesson_times": [
+    {
+      "classes": [
+        "DT",
+        "ET",
+        "GR",
+        "KL",
+        "VP",
+        "EP",
+        "LT"
+      ],
+      "days": [
+        "Pirmdiena",
+        "Otrdiena",
+        "Trešdiena",
+        "Ceturtdiena",
+        "Piektdiena",
+        "Sestdiena",
+        "Svētdiena"
+      ],
+      "lessons": [
+        {
+          "start": "08:00",
+          "end": "08:40",
+          "name": "Pirmā Stunda"
+        },
+        {
+          "start": "08:45",
+          "end": "09:25",
+          "name": "Otrā Stunda"
+        },
+        {
+          "start": "09:35",
+          "end": "10:15",
+          "name": "Trešā Stunda"
+        },
+        {
+          "start": "10:20",
+          "end": "11:00",
+          "name": "Ceturtā Stunda"
+        },
+        {
+          "start": "11:40",
+          "end": "12:20",
+          "name": "Piektā Stunda"
+        },
+        {
+          "start": "12:25",
+          "end": "13:05",
+          "name": "Sestā Stunda"
+        },
+        {
+          "start": "13:15",
+          "end": "13:55",
+          "name": "Septītā Stunda"
+        },
+        {
+          "start": "14:00",
+          "end": "14:40",
+          "name": "Astotā Stunda"
+        }
+      ]
+    },
+    {
+      "classes": [
+        "SM",
+        "MO",
+        "MT",
+        "BG",
+        "MG",
+        "ND",
+        "MH"
+      ],
+      "days": [
+        "Pirmdiena",
+        "Otrdiena",
+        "Trešdiena",
+        "Ceturtdiena",
+        "Piektdiena",
+        "Sestdiena",
+        "Svētdiena"
+      ],
+      "lessons": [
+        {
+          "start": "09:15",
+          "end": "09:55",
+          "name": "Pirmā Stunda"
+        },
+        {
+          "start": "10:00",
+          "end": "10:40",
+          "name": "Otrā Stunda"
+        },
+        {
+          "start": "10:50",
+          "end": "11:30",
+          "name": "Trešā Stunda"
+        },
+        {
+          "start": "11:35",
+          "end": "12:15",
+          "name": "Ceturtā Stunda"
+        },
+        {
+          "start": "12:55",
+          "end": "13:35",
+          "name": "Piektā Stunda"
+        },
+        {
+          "start": "13:40",
+          "end": "14:20",
+          "name": "Sestā Stunda"
+        },
+        {
+          "start": "14:30",
+          "end": "15:10",
+          "name": "Septītā Stunda"
+        },
+        {
+          "start": "15:15",
+          "end": "15:55",
+          "name": "Astotā Stunda"
+        }
+      ]
+    },
+    {
+      "classes": [
+        "AD",
+        "ID",
+        "RD",
+        "VD",
+        "MD",
+        "VO"
+      ],
+      "days": [
+        "Pirmdiena",
+        "Otrdiena",
+        "Trešdiena",
+        "Ceturtdiena",
+        "Piektdiena",
+        "Sestdiena",
+        "Svētdiena"
+      ],
+      "lessons": [
+        {
+          "start": "10:10",
+          "end": "10:50",
+          "name": "Pirmā Stunda"
+        },
+        {
+          "start": "10:55",
+          "end": "11:35",
+          "name": "Otrā Stunda"
+        },
+        {
+          "start": "11:45",
+          "end": "12:25",
+          "name": "Trešā Stunda"
+        },
+        {
+          "start": "12:30",
+          "end": "13:10",
+          "name": "Ceturtā Stunda"
+        },
+        {
+          "start": "13:50",
+          "end": "14:30",
+          "name": "Piektā Stunda"
+        },
+        {
+          "start": "14:35",
+          "end": "15:15",
+          "name": "Sestā Stunda"
+        },
+        {
+          "start": "15:25",
+          "end": "16:05",
+          "name": "Septītā Stunda"
+        },
+        {
+          "start": "16:10",
+          "end": "16:50",
+          "name": "Astotā Stunda"
+        }
+      ]
+    }
+  ],
+  "break_lengths": {
+    "5": "Piecminūte",
+    "40": "Pusdienu Starpbŗīdis",
+    "default": "Starpbrīdis"
+  }
+}
