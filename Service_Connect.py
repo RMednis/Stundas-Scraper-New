@@ -35,6 +35,8 @@ def make_data_model(lesson_data, req_type):
     date = lesson_data["date"].split("-")
     date_from = datetime.datetime.strptime(date[0].strip(' '), '%d.%m.%Y.')
     date_to = datetime.datetime.strptime(date[1].strip(' '), '%d.%m.%Y.')
+    week = date_from.isocalendar()
+    isoweek = "{0}-W{1}".format(week[0], week[1])
 
     if req_type == "json":  # Json parser does not serialize datetime, so we convert to string
         now = str(now.isoformat())
@@ -45,6 +47,7 @@ def make_data_model(lesson_data, req_type):
         "name": lesson_data["name"].replace("/", ","),  # Returns the class/room/teacher name, removing "/" chars
         "updated": now,  # Current time (For knowing when the script updated this object)
         "date": {
+            "week": isoweek,
             "from": date_from,
             "to": date_to
         },

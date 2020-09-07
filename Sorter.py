@@ -99,8 +99,8 @@ def time_adder(week, class_name, table_type):
                         # If the current and next lessons have different indexes
                         # (usually when there's multiple groups the index stays the same)
 
-                        break_start = lesson.time["to"]  # Get the break start time (this lessons end time)
-                        break_end = next_lesson.time["from"]  # Get the break end time (the next lessons start time)
+                        break_start = lesson.time["lidz"]  # Get the break start time (this lessons end time)
+                        break_end = next_lesson.time["no"]  # Get the break end time (the next lessons start time)
 
                         time_standard = '%H:%M'
                         break_length = datetime.datetime.strptime(break_end,
@@ -146,15 +146,15 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
             self.x = x  # Object X coordinate
             self.y = y  # Object Y coordinate
             self.time = {
-                "from": 0,
-                "to": 0
+                "no": 0,
+                "lidz": 0
             }
             self.index = 0  # Index to determine lectures columnar position
 
         def add_time(self, time_from, time_to):
             self.time = {
-                "from": time_from,
-                "to": time_to
+                "no": time_from,
+                "lidz": time_to
             }
 
         def get_dict(self):
@@ -166,7 +166,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
                     'skolotajs': self.skolotajs,
                     'kabinets': self.kabinets,
                     'klase': self.klase,
-                    'group': self.group,
+                    'grupa': self.group,
                 }
             else:
                 return {
@@ -174,7 +174,7 @@ def day_sorter(scraped_data, class_list, teacher_list, room_list):
                     'skolotajs': self.skolotajs,
                     'kabinets': self.kabinets,
                     'klase': self.klase,
-                    'group': self.group,
+                    'grupa': self.group,
                     'index': self.index,
                 }
 
